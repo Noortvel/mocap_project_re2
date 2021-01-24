@@ -17,7 +17,8 @@ public class StereoCamerasShoter : MonoBehaviour
     [SerializeField]
     private GameObject rootObjects = null;
 
-    private const string baseOutImagesPath = "Assets/DepthTest1/";
+    [SerializeField]
+    private string baseOutImagesPath = "Assets/DepthTest1/";
 
     public void SaveImages()
     {

@@ -228,15 +228,6 @@ void PlayVideo(VideoCapture cap) {
 		}
 	}
 }
-void DetectBlobs(Mat image, SimpleBlobDetector& detector, vector<KeyPoint>& keypointsL) {
-	static Mat gImgL;
-
-	
-
-	static Mat im_with_keypointsL;
-
-	imshow("Image", im_with_keypointsL);
-}
 
 void VideoBlobs() {
 	VideoCapture videoL("./data/video/camera0_007.mp4");
@@ -279,39 +270,6 @@ void VideoBlobs() {
 	cv::waitKey(0);
 }
 
-void FileStorage() {
-	//// write
-	//Mat canny;
-	//cv::FileStorage fs("canny.yml", FileStorage::WRITE);
-	//fs << "canny" << canny;
-	//fs.release();
-
-	//// read
-	//cv::FileStorage fs("canny.yml", FileStorage::READ);
-	//fs["canny"] >> canny;
-	//fs.release();
-}
-bool GetCachedCalbrate(
-	CameraChessPatternCalibrateTask::Input& input,
-	CameraChessPatternCalibrateTask::Result& result) {
-	std::ifstream file("./DataCache/CameraCalibrationCommon.json");
-	if (file.good()) {
-		file.close();
-		cv::FileStorage fs("./DataCache/CameraCalibrationCommon.json", FileStorage::READ);
-		fs["cameraMatrix"] >> result.cameraMatrix;
-		fs["distCoeffs"] >> result.distCoeffs;
-		cout << "Camera calib restored from cache" << endl;
-		return true;
-	}
-	CameraChessPatternCalibrateTask::Task calibrateCameraCommonTask;
-	calibrateCameraCommonTask.Execute(input);
-	cv::FileStorage fs("./DataCache/CameraCalibrationCommon.json", FileStorage::WRITE);
-	fs << "cameraMatrix" << calibrateCameraCommonTask.Result().cameraMatrix;
-	fs << "distCoeffs" << calibrateCameraCommonTask.Result().distCoeffs;
-	return false;
-}
-
-
 int main() {
 	//MainProcessor mainProceccor;
 
@@ -344,12 +302,24 @@ int main() {
 	cachedStereoCamCalibInput.chessboard3dPoints = &chessboardPoints3D;
 	cachedStereoCamCalibInput.patternSize = patternSize;
 	cachedStereoCamCalibInput.cachedResultFilePath = "./data_cache/stereoCameraCalibCommon.json";
+	cachedStereoCamCalibInput.camera1Result = &cachedCameraCalibResult;
+	cachedStereoCamCalibInput.camera2Result = &cachedCameraCalibResult;
 
 	CachedStereoCameraChessPatternCalibrateTask::Task cachedStereoCameraCalib;
 	cachedStereoCameraCalib.Execute(cachedStereoCamCalibInput);
 
-
-
+	auto stereoResult = cachedStereoCameraCalib.Result();
+	Mat R1, R2, P1, P2, Q;
+	cv::stereoRectify(
+		cachedCameraCalibResult.cameraMatrix,
+		cachedCameraCalibResult.distCoeffs,
+		cachedCameraCalibResult.cameraMatrix,
+		cachedCameraCalibResult.distCoeffs,
+		stereoResult.imageSize,
+		stereoResult.R,
+		stereoResult.T,
+		R1, R2, P1, P2, Q);
+	//cout << R1 << endl << R2 << endl << P1 << endl << P2 << endl << Q << endl;
 	return 0;
 	/*
 	CameraChessPatternCalibrateTask::Task calibrateCameraCommonTask;
@@ -365,24 +335,6 @@ int main() {
 	//auto focalLen = result.cameraMatrix.at<float>(0, 0);
 	//cout << "Focal Len=" << focalLen << endl;
 	//http://www.vicon.com/hardware/cameras/vero/
-
-	StereoCameraChessPatternCalibrateTask::Input stereoCamCalibInput;
-	stereoCamCalibInput.cameraLCalibrateImagesPathMask = "./data/calibration/common/StereoCamera0*.png";
-	stereoCamCalibInput.cameraRCalibrateImagesPathMask = "./data/calibration/common/StereoCamera1*.png";
-	stereoCamCalibInput.cellSize = cellSize;
-	stereoCamCalibInput.chessboard3dPoints = &chessboardPoints3D;
-	stereoCamCalibInput.patternSize = patternSize;
-
-	StereoCameraChessPatternCalibrateTask::Task stereoCamCalibTask;
-	stereoCamCalibTask.Execute(stereoCamCalibInput);
-
-	auto stereoResult = stereoCamCalibTask.Result();
-	cout << "Cam0 Mat\n" << stereoResult.cameraMatrix0 << endl;
-	cout << "Cam1 Mat\n" << stereoResult.cameraMatrix1 << endl;
-	cout << "R Mat\n" << stereoResult.R << endl;
-	cout << "T Mat\n" << stereoResult.T << endl;
-	cout << "F Mat\n" << stereoResult.F << endl;
-	cout << "E Mat\n" << stereoResult.E << endl;
 
 	/*cv::stereoRectify(
 		stereoResult.cameraMatrix0,

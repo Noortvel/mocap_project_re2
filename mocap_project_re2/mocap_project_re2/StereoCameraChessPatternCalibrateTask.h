@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <string>
+#include "CameraChessPatternCalibrateTask.h"
 
 namespace StereoCameraChessPatternCalibrateTask
 {
@@ -14,6 +15,8 @@ namespace StereoCameraChessPatternCalibrateTask
 		string cameraLCalibrateImagesPathMask;
 		string cameraRCalibrateImagesPathMask;
 		vector<Point3f>* chessboard3dPoints;
+		CameraChessPatternCalibrateTask::Result* camera1Result;
+		CameraChessPatternCalibrateTask::Result* camera2Result;
 	};
 	struct Result {
 		Mat cameraMatrix0;
@@ -21,6 +24,7 @@ namespace StereoCameraChessPatternCalibrateTask
 		Mat cameraMatrix1;
 		Mat distCoeffs1;
 		Mat R, T, E, F;
+		Size2i imageSize;
 	};
 	struct Task : ITask<Input, Result> {
 		void Execute(Input& input) override;

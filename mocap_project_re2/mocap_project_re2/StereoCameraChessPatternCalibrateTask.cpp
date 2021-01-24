@@ -33,20 +33,21 @@ void StereoCameraChessPatternCalibrateTask::Task::Execute(Input& input) {
 	for (int i = 0; i < minObjPointsCount; i++) {
 		objectPoints.push_back(*input.chessboard3dPoints);
 	}
+	result.imageSize = imageSize;
 	spdlog::debug("Begin stereo calibrate");
 	cv::stereoCalibrate(
 		objectPoints,
 		planarPointsCam0,
 		planarPointsCam1,
-		result.cameraMatrix0,
-		result.distCoeffs0,
-		result.cameraMatrix1,
-		result.distCoeffs1,
+		input.camera1Result->cameraMatrix,
+		input.camera1Result->distCoeffs,
+		input.camera2Result->cameraMatrix,
+		input.camera2Result->distCoeffs,
 		imageSize,
 		result.R,
 		result.T,
 		result.E,
-		result.F
+		result.F, CALIB_FIX_INTRINSIC
 	);
 	spdlog::debug("Ended stereo calibrate");
 	spdlog::debug("StereoCameraChessPatternCalibrateTask ended");
