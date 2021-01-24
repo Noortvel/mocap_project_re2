@@ -307,7 +307,8 @@ int main() {
 
 	CachedStereoCameraChessPatternCalibrateTask::Task cachedStereoCameraCalib;
 	cachedStereoCameraCalib.Execute(cachedStereoCamCalibInput);
-
+	Mat _calibImg = imread("./data/calibration/common/StereoCamera0-1611526867375.png");
+	auto _imgSize = _calibImg.size();
 	auto stereoResult = cachedStereoCameraCalib.Result();
 	Mat R1, R2, P1, P2, Q;
 	cv::stereoRectify(
@@ -315,32 +316,71 @@ int main() {
 		cachedCameraCalibResult.distCoeffs,
 		cachedCameraCalibResult.cameraMatrix,
 		cachedCameraCalibResult.distCoeffs,
-		stereoResult.imageSize,
+		_imgSize,
 		stereoResult.R,
 		stereoResult.T,
 		R1, R2, P1, P2, Q);
+
+	//DEPTH TESTER
+	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
+	Mat depthR = imread("./data/depth/CameraR-Depth-.png");
+	cv::SimpleBlobDetector::Params params;
+	params.minDistBetweenBlobs = 0;
+	params.filterByInertia = false;
+	params.filterByConvexity = false;
+	params.filterByColor = false;
+	params.filterByCircularity = false;
+	params.filterByArea = false;
+	vector<KeyPoint> keypointsL;
+	vector<KeyPoint> keypointsR;
+	Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+	Mat depthLGray, depthRGray;
+	cv::cvtColor(depthL, depthLGray, cv::COLOR_BGR2GRAY);
+	cv::cvtColor(depthR, depthRGray, cv::COLOR_BGR2GRAY);
+
+	double thresh = 90;//90//150
+	double maxValue = 255;
+	threshold(depthLGray, depthLGray, thresh, maxValue, THRESH_BINARY);
+	threshold(depthRGray, depthRGray, thresh, maxValue, THRESH_BINARY);
+
+	detector->detect(depthLGray, keypointsL);
+	detector->detect(depthRGray, keypointsR);
+	//drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	//cv::imshow("Main", depthLGray);
+
+	std::vector<Mat> outArray(keypointsL.size());
+	for (auto iter : outArray)
+	{
+		iter.create(4, 1, CV_64F);
+	}
+	vector<Point2f> vecL;
+	vector<Point2f> vecR;
+	for (auto& iter : keypointsL) vecL.push_back(iter.pt);
+	for (auto& iter : keypointsR) vecR.push_back(iter.pt);
+	auto comp = [](Point2f& a, Point2f& b) { return a.y > b.y; };
+	sort(vecL.begin(), vecL.end(), comp);
+	sort(vecR.begin(), vecR.end(), comp);
+
+	Mat outMat(1, keypointsL.size(), CV_64F);
+	triangulatePoints(P1, P2, vecL, vecR, outMat);
+	for (int j = 0; j < vecL.size(); j++) {
+		cout << "Coord" << endl;
+		cout << "(";
+		//To Decard system
+		float w = outMat.at<float>(3, j);
+		for (int i = 0; i < 4; i++) {
+			cout << " " << (outMat.at<float>(i, j) / w)  << " ";
+		}
+		cout << ")\n";
+	}
+	
+	waitKey(0);
+
 	//cout << R1 << endl << R2 << endl << P1 << endl << P2 << endl << Q << endl;
 	return 0;
-	/*
-	CameraChessPatternCalibrateTask::Task calibrateCameraCommonTask;
-	calibrateCameraCommonTask.Execute(calibrateCameraCommonTaskInput);
-	auto result = calibrateCameraCommonTask.Result();
-	cout << result.cameraMatrix << endl;*/
-
+	//OLD
 	//FindDistancions((float)cameraMatrix.at<double>(0, 0));
-
-	//TODO: сделать стерео каллибровку, см инфу по методуту для лучше каллбировки
-	
-	//stereoCalibrate()
 	//auto focalLen = result.cameraMatrix.at<float>(0, 0);
 	//cout << "Focal Len=" << focalLen << endl;
 	//http://www.vicon.com/hardware/cameras/vero/
-
-	/*cv::stereoRectify(
-		stereoResult.cameraMatrix0,
-		stereoResult.distCoeffs0,
-		stereoResult.cameraMatrix1,
-		stereoResult.distCoeffs1,
-		)*/
-	return 0;
 }
