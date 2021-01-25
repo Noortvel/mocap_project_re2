@@ -274,6 +274,7 @@ int main() {
 	//MainProcessor mainProceccor;
 
 	//VideoBlobs();
+
 	spdlog::set_level(spdlog::level::debug);
 	auto patternSize = Size2i(6, 9);
 	auto cellSize = 2 * 0.025226f;//
@@ -311,6 +312,7 @@ int main() {
 	auto _imgSize = _calibImg.size();
 	auto stereoResult = cachedStereoCameraCalib.Result();
 	Mat R1, R2, P1, P2, Q;
+	Rect ROI1, ROI2;
 	cv::stereoRectify(
 		cachedCameraCalibResult.cameraMatrix,
 		cachedCameraCalibResult.distCoeffs,
@@ -319,11 +321,48 @@ int main() {
 		_imgSize,
 		stereoResult.R,
 		stereoResult.T,
-		R1, R2, P1, P2, Q);
-
+		R1, R2, P1, P2, Q, 1024, -1, Size(), &ROI1, &ROI2);
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
 	Mat depthR = imread("./data/depth/CameraR-Depth-.png");
+	
+	/*rectangle(depthL, ROI1, Scalar(255, 0, 0), 4, 8, 0);
+	rectangle(depthR, ROI2, Scalar(255, 0, 0), 4, 8, 0);*/
+	Mat map11, map12, map21, map22;
+	initUndistortRectifyMap(
+		cachedCameraCalibResult.cameraMatrix,
+		cachedCameraCalibResult.distCoeffs,
+		R1, P1, _imgSize, CV_32F, map11, map12);
+	cv::initUndistortRectifyMap(
+		cachedCameraCalibResult.cameraMatrix,
+		cachedCameraCalibResult.distCoeffs,
+		R2, P2, _imgSize, CV_32F, map21, map22);
+
+	Mat depth1Rmpd, depth2Rmpd;
+	
+
+	cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
+	remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);
+
+	rectangle(depth1Rmpd, ROI1, Scalar(255, 0, 0), 4, 8, 0);
+	rectangle(depth2Rmpd, ROI2, Scalar(255, 0, 0), 4, 8, 0);
+
+
+	//imshow("Main", depth1Rmpd);
+	/*depth1Af.create(depthL.size(), CV_64F);
+	auto depthAfSize = depthL.size();
+	warpAffine(depthL, depth1Af, R1, depthAfSize);
+	warpAffine(depthR, depth2Af, R2, depthAfSize);
+	*/
+	//waitKey(0);
+
+	Mat depthFull;
+	cv::hconcat(depth1Rmpd, depth2Rmpd, depthFull);
+	namedWindow("Main", WINDOW_NORMAL);
+	resizeWindow("Main", 1024 , 1024);
+	imshow("Main", depthFull);
+	waitKey(0);
+
 	cv::SimpleBlobDetector::Params params;
 	params.minDistBetweenBlobs = 0;
 	params.filterByInertia = false;
@@ -340,13 +379,14 @@ int main() {
 
 	double thresh = 90;//90//150
 	double maxValue = 255;
-	threshold(depthLGray, depthLGray, thresh, maxValue, THRESH_BINARY);
+	cv::threshold(depthLGray, depthLGray, thresh, maxValue, THRESH_BINARY);
 	threshold(depthRGray, depthRGray, thresh, maxValue, THRESH_BINARY);
 
 	detector->detect(depthLGray, keypointsL);
 	detector->detect(depthRGray, keypointsR);
-	//drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-	//cv::imshow("Main", depthLGray);
+
+	drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	cv::imshow("Main", depthLGray);
 
 	std::vector<Mat> outArray(keypointsL.size());
 	for (auto iter : outArray)
