@@ -344,8 +344,8 @@ int main() {
 	cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
 	remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);
 
-	rectangle(depth1Rmpd, ROI1, Scalar(255, 0, 0), 4, 8, 0);
-	rectangle(depth2Rmpd, ROI2, Scalar(255, 0, 0), 4, 8, 0);
+	/*rectangle(depth1Rmpd, ROI1, Scalar(255, 0, 0), 4, 8, 0);
+	rectangle(depth2Rmpd, ROI2, Scalar(255, 0, 0), 4, 8, 0);*/
 
 
 	//imshow("Main", depth1Rmpd);
@@ -356,12 +356,12 @@ int main() {
 	*/
 	//waitKey(0);
 
-	Mat depthFull;
+	/*Mat depthFull;
 	cv::hconcat(depth1Rmpd, depth2Rmpd, depthFull);
 	namedWindow("Main", WINDOW_NORMAL);
 	resizeWindow("Main", 1024 , 1024);
 	imshow("Main", depthFull);
-	waitKey(0);
+	waitKey(0);*/
 
 	cv::SimpleBlobDetector::Params params;
 	params.minDistBetweenBlobs = 0;
@@ -374,8 +374,8 @@ int main() {
 	vector<KeyPoint> keypointsR;
 	Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
 	Mat depthLGray, depthRGray;
-	cv::cvtColor(depthL, depthLGray, cv::COLOR_BGR2GRAY);
-	cv::cvtColor(depthR, depthRGray, cv::COLOR_BGR2GRAY);
+	cv::cvtColor(depth1Rmpd, depthLGray, cv::COLOR_BGR2GRAY);
+	cv::cvtColor(depth2Rmpd, depthRGray, cv::COLOR_BGR2GRAY);
 
 	double thresh = 90;//90//150
 	double maxValue = 255;
@@ -385,8 +385,8 @@ int main() {
 	detector->detect(depthLGray, keypointsL);
 	detector->detect(depthRGray, keypointsR);
 
-	drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-	cv::imshow("Main", depthLGray);
+	//drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	//cv::imshow("Main", depthLGray);
 
 	std::vector<Mat> outArray(keypointsL.size());
 	for (auto iter : outArray)
