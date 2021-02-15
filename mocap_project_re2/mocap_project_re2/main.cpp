@@ -285,15 +285,16 @@ int main() {
 		}
 	}
 
-	CachedCameraChessPatternCalibrateTask::Input calibrateCameraCommonTaskInput;
-	calibrateCameraCommonTaskInput.calibrateImagesPathMask = "./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png";
-	calibrateCameraCommonTaskInput.cellSize = cellSize;
-	calibrateCameraCommonTaskInput.patternSize = patternSize;
-	calibrateCameraCommonTaskInput.chessboard3dPoints = &chessboardPoints3D;
-	calibrateCameraCommonTaskInput.cachedResultFilePath = "./data_cache/cameraCalibCommon.json";
+
+	CachedCameraChessPatternCalibrateTask::Input calibrateCameraCachedTaskInput;
+	calibrateCameraCachedTaskInput.calibrateImagesPathMask = "./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png";
+	calibrateCameraCachedTaskInput.cellSize = cellSize;
+	calibrateCameraCachedTaskInput.patternSize = patternSize;
+	calibrateCameraCachedTaskInput.chessboard3dPoints = &chessboardPoints3D;
+	calibrateCameraCachedTaskInput.cachedResultFilePath = "./data_cache/cameraCalibCommon.json";
 
 	CachedCameraChessPatternCalibrateTask::Task cachedCameraCalib;
-	cachedCameraCalib.Execute(calibrateCameraCommonTaskInput);
+	cachedCameraCalib.Execute(calibrateCameraCachedTaskInput);
 	auto cachedCameraCalibResult = cachedCameraCalib.Result();
 
 	CachedStereoCameraChessPatternCalibrateTask::Input cachedStereoCamCalibInput;
@@ -308,6 +309,7 @@ int main() {
 
 	CachedStereoCameraChessPatternCalibrateTask::Task cachedStereoCameraCalib;
 	cachedStereoCameraCalib.Execute(cachedStereoCamCalibInput);
+
 	Mat _calibImg = imread("./data/calibration/common/StereoCamera0-1611526867375.png");
 	auto _imgSize = _calibImg.size();
 	auto stereoResult = cachedStereoCameraCalib.Result();

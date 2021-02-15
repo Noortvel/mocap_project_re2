@@ -27,24 +27,5 @@ public class StereoCamerasShoter : MonoBehaviour
         RenderTextureImageSaver.Save(cameraR.targetTexture, $"{baseOutImagesPath}CameraR-{imagePrefix}-{timestamp}");
         RenderTextureImageSaver.Save(cameraL.targetTexture, $"{baseOutImagesPath}CameraL-{imagePrefix}-{timestamp}");
     }
-    public void SaveObjectsPosition()
-    {
-        //JsonUtility.ToJson();
-        
-        var list = new List<(string Name, Vector3 Position)>();
-        for (int i = 0; i < rootObjects.transform.childCount; i++)
-        {
-            var child = rootObjects.transform.GetChild(i);
-            if (child.gameObject.activeSelf)
-            {
-                list.Add((child.gameObject.name, child.localPosition));
-            }
-        }
-        string str = JsonUtiltyExtensions.FromList(list);
-        using(var steam = new StreamWriter($"{baseOutImagesPath}ObjectsDistances.json", false))
-        {
-            steam.WriteLine(str);
-        }
-    }
 
 }

@@ -831,6 +831,7 @@ GameObject:
   m_Component:
   - component: {fileID: 762911113}
   - component: {fileID: 762911114}
+  - component: {fileID: 762911115}
   m_Layer: 0
   m_Name: Cameras
   m_TagString: Untagged
@@ -872,7 +873,22 @@ MonoBehaviour:
   imagePrefix: Depth
   isAddTimestamp: 0
   rootObjects: {fileID: 1102199917}
-  baseOutImagesPath: Images/DepthData/
+  baseOutImagesPath: GenericData/Images/DepthData/
+--- !u!114 &762911115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762911112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05cf8bb8c2eea6942bca9ffbd45a4536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathName: GenericData/ObjectsDistances.json
+  cameraPosition: {fileID: 1060583077}
+  parentObject: {fileID: 1102199918}
 --- !u!1 &799536437
 GameObject:
   m_ObjectHideFlags: 0
@@ -1630,6 +1646,11 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 1944422025393102896, guid: f5ab570b8ea129c4ebd61871c410924d, type: 3}
   m_PrefabInstance: {fileID: 1060583073}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1060583077 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1944422026028477416, guid: f5ab570b8ea129c4ebd61871c410924d, type: 3}
+  m_PrefabInstance: {fileID: 1060583073}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1102199917
 GameObject:
   m_ObjectHideFlags: 0
@@ -2289,9 +2310,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 762911114}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: SaveObjectsPosition
+      - m_Target: {fileID: 762911115}
+        m_TargetAssemblyTypeName: ObjectDistancesSaver, Assembly-CSharp
+        m_MethodName: SaveObjectDistances
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
