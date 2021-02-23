@@ -7,6 +7,10 @@
 #include "json\json_struct.h"
 #include <opencv2/core/persistence.hpp>
 #include <spdlog/spdlog.h>
+#include <nlohmann/json.hpp>
+
+#include "JsonHelper.h"
+#include "NamePosition.h"
 
 #include "SceneSettings.h"
 
@@ -285,25 +289,25 @@ int main() {
 		}
 	}
 
-
+	//For syntatic data used 2 equals cameras
 	CachedCameraChessPatternCalibrateTask::Input calibrateCameraCachedTaskInput;
+	calibrateCameraCachedTaskInput.cachedResultFilePath = "./data_cache/cameraCalibCommon.json";
 	calibrateCameraCachedTaskInput.calibrateImagesPathMask = "./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png";
 	calibrateCameraCachedTaskInput.cellSize = cellSize;
 	calibrateCameraCachedTaskInput.patternSize = patternSize;
 	calibrateCameraCachedTaskInput.chessboard3dPoints = &chessboardPoints3D;
-	calibrateCameraCachedTaskInput.cachedResultFilePath = "./data_cache/cameraCalibCommon.json";
 
 	CachedCameraChessPatternCalibrateTask::Task cachedCameraCalib;
 	cachedCameraCalib.Execute(calibrateCameraCachedTaskInput);
 	auto cachedCameraCalibResult = cachedCameraCalib.Result();
 
 	CachedStereoCameraChessPatternCalibrateTask::Input cachedStereoCamCalibInput;
+	cachedStereoCamCalibInput.cachedResultFilePath = "./data_cache/stereoCameraCalibCommon.json";
 	cachedStereoCamCalibInput.cameraLCalibrateImagesPathMask = "./data/calibration/common/StereoCamera0*.png";
 	cachedStereoCamCalibInput.cameraRCalibrateImagesPathMask = "./data/calibration/common/StereoCamera1*.png";
 	cachedStereoCamCalibInput.cellSize = cellSize;
 	cachedStereoCamCalibInput.chessboard3dPoints = &chessboardPoints3D;
 	cachedStereoCamCalibInput.patternSize = patternSize;
-	cachedStereoCamCalibInput.cachedResultFilePath = "./data_cache/stereoCameraCalibCommon.json";
 	cachedStereoCamCalibInput.camera1Result = &cachedCameraCalibResult;
 	cachedStereoCamCalibInput.camera2Result = &cachedCameraCalibResult;
 
@@ -324,14 +328,14 @@ int main() {
 		stereoResult.R,
 		stereoResult.T,
 		R1, R2, P1, P2, Q, 1024, -1, Size(), &ROI1, &ROI2);
+
+
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
 	Mat depthR = imread("./data/depth/CameraR-Depth-.png");
 	
-	/*rectangle(depthL, ROI1, Scalar(255, 0, 0), 4, 8, 0);
-	rectangle(depthR, ROI2, Scalar(255, 0, 0), 4, 8, 0);*/
 	Mat map11, map12, map21, map22;
-	initUndistortRectifyMap(
+	cv::initUndistortRectifyMap(
 		cachedCameraCalibResult.cameraMatrix,
 		cachedCameraCalibResult.distCoeffs,
 		R1, P1, _imgSize, CV_32F, map11, map12);
@@ -343,27 +347,11 @@ int main() {
 	Mat depth1Rmpd, depth2Rmpd;
 	
 
-	cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
-	remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);
+	/*cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
+	cv::remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);*/
 
-	/*rectangle(depth1Rmpd, ROI1, Scalar(255, 0, 0), 4, 8, 0);
-	rectangle(depth2Rmpd, ROI2, Scalar(255, 0, 0), 4, 8, 0);*/
-
-
-	//imshow("Main", depth1Rmpd);
-	/*depth1Af.create(depthL.size(), CV_64F);
-	auto depthAfSize = depthL.size();
-	warpAffine(depthL, depth1Af, R1, depthAfSize);
-	warpAffine(depthR, depth2Af, R2, depthAfSize);
-	*/
-	//waitKey(0);
-
-	/*Mat depthFull;
-	cv::hconcat(depth1Rmpd, depth2Rmpd, depthFull);
-	namedWindow("Main", WINDOW_NORMAL);
-	resizeWindow("Main", 1024 , 1024);
-	imshow("Main", depthFull);
-	waitKey(0);*/
+	depth1Rmpd = depthL;
+	depth2Rmpd = depthR;
 
 	cv::SimpleBlobDetector::Params params;
 	params.minDistBetweenBlobs = 0;
@@ -405,17 +393,56 @@ int main() {
 
 	Mat outMat(1, keypointsL.size(), CV_64F);
 	triangulatePoints(P1, P2, vecL, vecR, outMat);
+
+	using namespace std;
+	ifstream json_file("./data/depth/ObjectsDistances.json");
+	string json_string((istreambuf_iterator<char>(json_file)), istreambuf_iterator<char>());
+	json_file.close();
+	nlohmann::json namePosition = nlohmann::json::parse(json_string);
+	vector<Vec3> realObjectsPositions;
+	for (auto& el : namePosition) {
+		cout << el.dump() << endl;
+		Vec3 v;
+		v.x = el["Position"]["x"].get<float>();
+		v.y = el["Position"]["y"].get<float>();
+		v.z = el["Position"]["z"].get<float>();
+		realObjectsPositions.push_back(v);
+	}
+
+	vector<Vec3> detectedObjectPositions;
 	for (int j = 0; j < vecL.size(); j++) {
 		cout << "Coord" << endl;
 		cout << "(";
 		//To Decard system
 		float w = outMat.at<float>(3, j);
+		Vec3 v;
+		v.x = outMat.at<float>(0, j) / w;
+		v.y = -outMat.at<float>(1, j) / w; // Coord y is reversed in image coord system
+		v.z = outMat.at<float>(2, j) / w;
+		detectedObjectPositions.push_back(v);
 		for (int i = 0; i < 4; i++) {
 			cout << " " << (outMat.at<float>(i, j) / w)  << " ";
 		}
+
 		cout << ")\n";
 	}
 	
+	int minObjectsCount = std::min(detectedObjectPositions.size(), realObjectsPositions.size());
+	vector<Vec3> linarDelta;
+	for (size_t i = 0; i < minObjectsCount; i++) {
+		Vec3& detected = detectedObjectPositions[i];
+		Vec3& real = realObjectsPositions[i];
+		Vec3 result = real - detected;
+		linarDelta.push_back(result);
+		cout << "vec delta" << endl;
+		cout << "(" << result.x << ", " << result.y << ", " << result.z << ")";
+		cout << endl;
+	}
+	//[](auto& a, auto& b) { return a < b; }
+	auto minMaxDelta = std::minmax_element(
+		linarDelta.begin(), linarDelta.end(), [](auto& a, auto& b) { return a.length() < b.length(); });
+
+	cout << "Linar error: " << (*minMaxDelta.first - *minMaxDelta.second).length() << endl;
 	waitKey(0);
 
 	//cout << R1 << endl << R2 << endl << P1 << endl << P2 << endl << Q << endl;

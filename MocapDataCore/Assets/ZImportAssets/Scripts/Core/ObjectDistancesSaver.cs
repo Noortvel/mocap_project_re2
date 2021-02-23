@@ -14,15 +14,27 @@ public class ObjectDistancesSaver : MonoBehaviour
     [SerializeField]
     private Transform parentObject;
 
+    private class NamePosition
+    {
+        public NamePosition(string name, Vector3 position)
+        {
+            Name = name;
+            Position = position;
+        }
+
+        public string Name;
+        public Vector3 Position;
+    }
+
     public void SaveObjectDistances()
     {
-        var list = new List<(string Name, Vector3 Position)>();
+        var list = new List<NamePosition>();
         for (int i = 0; i < parentObject.transform.childCount; i++)
         {
             var child = parentObject.transform.GetChild(i);
             if (child.gameObject.activeSelf)
             {
-                list.Add((child.gameObject.name, child.localPosition));
+                list.Add(new NamePosition(child.gameObject.name, child.localPosition));
             }
         }
         string str = JsonUtiltyExtensions.FromList(list);

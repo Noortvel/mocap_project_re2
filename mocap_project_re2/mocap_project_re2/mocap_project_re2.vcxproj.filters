@@ -19,6 +19,12 @@
     <Filter Include="Исходные файлы\Tasks">
       <UniqueIdentifier>{119b4fbc-1657-4db3-b81e-a460af3377d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Structs">
+      <UniqueIdentifier>{281e9d14-b14d-40b4-a8f2-720d8a8f8811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\DepthTest">
+      <UniqueIdentifier>{8272355f-2d5b-4a7b-8f28-bdc3d1ad57eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +84,15 @@
       <Filter>Файлы заголовков\Tasks</Filter>
     </ClInclude>
     <ClInclude Include="IFileCached.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec3.h">
+      <Filter>Файлы заголовков\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="NamePosition.h">
+      <Filter>Файлы заголовков\DepthTest</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonHelper.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include "ISerializable.h"
 #include "json\json_struct.h"
 
 using namespace std;
