@@ -54,6 +54,9 @@
     <ClCompile Include="CachedStereoCameraChessPatternCalibrateTask.cpp">
       <Filter>Исходные файлы\Tasks</Filter>
     </ClCompile>
+    <ClCompile Include="StereoRectify.cpp">
+      <Filter>Исходные файлы\Tasks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraCalibratior.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="JsonHelper.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoRectify.h">
+      <Filter>Файлы заголовков\Tasks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

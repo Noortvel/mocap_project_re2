@@ -20,12 +20,14 @@
 #include "StereoCameraChessPatternCalibrateTask.h"
 #include "CachedCameraChessPatternCalibrateTask.h"
 #include "CachedStereoCameraChessPatternCalibrateTask.h"
+#include "StereoRectify.h"
 
 
 
 using namespace cv;
 using namespace cv::Error;
 using namespace std;
+using namespace openmocap2;
 
 void FindDistancions(float _focalLenght) {
 
@@ -316,19 +318,19 @@ int main() {
 
 	Mat _calibImg = imread("./data/calibration/common/StereoCamera0-1611526867375.png");
 	auto _imgSize = _calibImg.size();
-	auto stereoResult = cachedStereoCameraCalib.Result();
-	Mat R1, R2, P1, P2, Q;
-	Rect ROI1, ROI2;
-	cv::stereoRectify(
-		cachedCameraCalibResult.cameraMatrix,
-		cachedCameraCalibResult.distCoeffs,
-		cachedCameraCalibResult.cameraMatrix,
-		cachedCameraCalibResult.distCoeffs,
-		_imgSize,
-		stereoResult.R,
-		stereoResult.T,
-		R1, R2, P1, P2, Q, 1024, -1, Size(), &ROI1, &ROI2);
 
+	auto stereoResult = cachedStereoCameraCalib.Result();
+	StereoRectify::Input rectifyInput;
+	rectifyInput.imageSize = _imgSize;
+	rectifyInput.cameraMatrix1 = stereoResult.cameraMatrix0;
+	rectifyInput.cameraMatrix2 = stereoResult.cameraMatrix1;
+	rectifyInput.distCoeffs1 = stereoResult.distCoeffs0;
+	rectifyInput.distCoeffs2 = stereoResult.distCoeffs1;
+	rectifyInput.R = stereoResult.R;
+	rectifyInput.T = stereoResult.T;
+
+	StereoRectify::Task rectify;
+	rectify.Execute(rectifyInput);
 
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
@@ -338,11 +340,11 @@ int main() {
 	cv::initUndistortRectifyMap(
 		cachedCameraCalibResult.cameraMatrix,
 		cachedCameraCalibResult.distCoeffs,
-		R1, P1, _imgSize, CV_32F, map11, map12);
+		rectify.Result().R1, rectify.Result().P1, _imgSize, CV_32F, map11, map12);
 	cv::initUndistortRectifyMap(
 		cachedCameraCalibResult.cameraMatrix,
 		cachedCameraCalibResult.distCoeffs,
-		R2, P2, _imgSize, CV_32F, map21, map22);
+		rectify.Result().R2, rectify.Result().P2, _imgSize, CV_32F, map21, map22);
 
 	Mat depth1Rmpd, depth2Rmpd;
 	
