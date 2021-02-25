@@ -148,7 +148,7 @@
     <ClCompile Include="CachedCameraCalibrate.cpp" />
     <ClCompile Include="CachedStereoCameraCalibrate.cpp" />
     <ClCompile Include="CameraCalibratior.cpp" />
-    <ClCompile Include="CameraChessPatternCalibrateTask.cpp" />
+    <ClCompile Include="CameraCalibrate.cpp" />
     <ClCompile Include="InitUndistortRectifyMap.cpp" />
     <ClCompile Include="SceneSettings.cpp" />
     <ClCompile Include="main.cpp" />

@@ -42,9 +42,6 @@
     <ClCompile Include="SceneSettings.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="CameraChessPatternCalibrateTask.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
     <ClCompile Include="StereoRectify.cpp">
       <Filter>Исходные файлы\Tasks</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
       <Filter>Исходные файлы\Tasks</Filter>
     </ClCompile>
     <ClCompile Include="StereoCameraCalibrate.cpp">
+      <Filter>Исходные файлы\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraCalibrate.cpp">
       <Filter>Исходные файлы\Tasks</Filter>
     </ClCompile>
   </ItemGroup>

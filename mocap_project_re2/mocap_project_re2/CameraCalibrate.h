@@ -1,11 +1,36 @@
 #pragma once
-#include "ITask.h"
-#include <opencv2/opencv.hpp>
 #include <vector>
 #include <string>
+#include <opencv2/opencv.hpp>
+#include "IFileCached.h"
 
 namespace openmocap2 {
-	namespace CameraCalibrate {
+	using namespace cv;
+	using namespace std;
+	struct CameraCalibrate {
+		struct Result : public IFileCached {
+			Mat cameraMatrix;
+			Mat distCoeffs;
+			vector<Mat> rvecs;
+			vector<Mat> tvecs;
+			void Save(std::string& path) override;
+			void Load(std::string& path) override;
+		};
+		Result result;
+		void Execute(
+			Size2i& patternSize,
+			float cellSize,
+			string& calibrateImagesPathMask,
+			vector<Point3f>& chessboard3dPoints);
+		CameraCalibrate();
+		CameraCalibrate(string& cachePath);
+	private:
+		string cachePath;
+		bool isCached = false;
+		bool isLoaded = false;
+	};
+
+	namespace CameraCalibrate123 {
 		using namespace cv;
 		using namespace std;
 		struct Input {

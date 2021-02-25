@@ -4,21 +4,18 @@
 #include "StereoRectify.h"
 
 namespace openmocap2 {
-	namespace InitUndistortRectifyMap {
-		struct Input {
-			Input();
-			Input(
-				CameraCalibrate::Result& camCalibResult,
-				StereoRectify::Result& stereoRectifyResult);
-			cv::Mat cameraMatrix, distCoeffs, R, P;
-			cv::Size2i imageSize;
-		};
+	using namespace cv;
+	struct InitUndistortRectifyMap {
 		struct Result
 		{
-			cv::Mat map1, map2;
+			Mat map1, map2;
 		};
-		struct Task : ITask<Input, Result> {
-			void Execute(Input& input) override;
-		};
-	}
+		Result result;
+		void Execute(
+			const Size2i& imageSize,
+			const Mat& cameraMatrix,
+			const Mat& distCoeffs,
+			const Mat& R,
+			const Mat& P);
+	};
 }

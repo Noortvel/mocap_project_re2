@@ -332,14 +332,23 @@ int main() {
 	StereoRectify::Task rectify;
 	rectify.Execute(rectifyInput);
 	
+	InitUndistortRectifyMap initUndistortRectifyMap1;
+	InitUndistortRectifyMap initUndistortRectifyMap2;
 
-	InitUndistortRectifyMap::Input initUndistortRectifyMapInput;
-	initUndistortRectifyMapInput.cameraMatrix = cachedCameraCalibResult.cameraMatrix;
-	initUndistortRectifyMapInput.distCoeffs = cachedCameraCalibResult.distCoeffs;
-	initUndistortRectifyMapInput.R = rectify.Result().R1;
-	initUndistortRectifyMapInput.P = rectify.Result().P1;
-	InitUndistortRectifyMap::Task initUndistortRectifyMap;
-	initUndistortRectifyMap.Execute(initUndistortRectifyMapInput);
+	initUndistortRectifyMap1.Execute(
+		_imgSize,
+		cachedCameraCalibResult.cameraMatrix,
+		cachedCameraCalibResult.distCoeffs,
+		rectify.Result().R1,
+		rectify.Result().P1);
+
+	initUndistortRectifyMap2.Execute(
+		_imgSize,
+		cachedCameraCalibResult.cameraMatrix,
+		cachedCameraCalibResult.distCoeffs,
+		rectify.Result().R2,
+		rectify.Result().P2);
+
 
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
