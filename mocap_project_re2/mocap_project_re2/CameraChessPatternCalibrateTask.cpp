@@ -1,7 +1,7 @@
-#include "CameraChessPatternCalibrateTask.h"
+#include "CameraCalibrate.h"
 #include <spdlog/spdlog.h>
 
-void CameraChessPatternCalibrateTask::Task::Execute(Input& input)
+void openmocap2::CameraCalibrate::Task::Execute(Input& input)
 {
 	spdlog::debug("CameraChessPatternCalibrateTask started");
 	vector<vector<Point2f>> findedCorners;

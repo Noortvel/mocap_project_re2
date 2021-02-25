@@ -1,8 +1,8 @@
-#include "StereoCameraChessPatternCalibrateTask.h"
+#include "StereoCameraCalibrate.h"
 #include <spdlog/spdlog.h>
 
 
-void StereoCameraChessPatternCalibrateTask::Task::Execute(Input& input) {
+void openmocap2::StereoCameraCalibrate::Task::Execute(Input& input) {
 	spdlog::debug("StereoCameraChessPatternCalibrateTask started");
 	vector<vector<Point2f>> planarPointsCam0;
 	vector<vector<Point2f>> planarPointsCam1;
@@ -53,7 +53,7 @@ void StereoCameraChessPatternCalibrateTask::Task::Execute(Input& input) {
 	spdlog::debug("StereoCameraChessPatternCalibrateTask ended");
 }
 
-void StereoCameraChessPatternCalibrateTask::Task::CalculatePlanarAndObjectArraysOfPoints(
+void openmocap2::StereoCameraCalibrate::Task::CalculatePlanarAndObjectArraysOfPoints(
 	string& imagesPath,
 	Size2i& pattenSize,
 	vector<Point3f>& chessboard3dPoints,

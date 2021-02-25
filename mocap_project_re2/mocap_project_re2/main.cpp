@@ -16,12 +16,12 @@
 
 #include "MainProcessor.h"
 #include "CameraCalibratior.h"
-#include "CameraChessPatternCalibrateTask.h"
-#include "StereoCameraChessPatternCalibrateTask.h"
-#include "CachedCameraChessPatternCalibrateTask.h"
-#include "CachedStereoCameraChessPatternCalibrateTask.h"
+#include "CameraCalibrate.h"
+#include "StereoCameraCalibrate.h"
+#include "CachedCameraCalibrate.h"
+#include "CachedStereoCameraCalibrate.h"
 #include "StereoRectify.h"
-
+#include "InitUndistortRectifyMap.h"
 
 
 using namespace cv;
@@ -292,18 +292,18 @@ int main() {
 	}
 
 	//For syntatic data used 2 equals cameras
-	CachedCameraChessPatternCalibrateTask::Input calibrateCameraCachedTaskInput;
+	CachedCameraCalibrate::Input calibrateCameraCachedTaskInput;
 	calibrateCameraCachedTaskInput.cachedResultFilePath = "./data_cache/cameraCalibCommon.json";
 	calibrateCameraCachedTaskInput.calibrateImagesPathMask = "./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png";
 	calibrateCameraCachedTaskInput.cellSize = cellSize;
 	calibrateCameraCachedTaskInput.patternSize = patternSize;
 	calibrateCameraCachedTaskInput.chessboard3dPoints = &chessboardPoints3D;
 
-	CachedCameraChessPatternCalibrateTask::Task cachedCameraCalib;
+	CachedCameraCalibrate::Task cachedCameraCalib;
 	cachedCameraCalib.Execute(calibrateCameraCachedTaskInput);
 	auto cachedCameraCalibResult = cachedCameraCalib.Result();
 
-	CachedStereoCameraChessPatternCalibrateTask::Input cachedStereoCamCalibInput;
+	CachedStereoCameraCalibrate::Input cachedStereoCamCalibInput;
 	cachedStereoCamCalibInput.cachedResultFilePath = "./data_cache/stereoCameraCalibCommon.json";
 	cachedStereoCamCalibInput.cameraLCalibrateImagesPathMask = "./data/calibration/common/StereoCamera0*.png";
 	cachedStereoCamCalibInput.cameraRCalibrateImagesPathMask = "./data/calibration/common/StereoCamera1*.png";
@@ -313,14 +313,14 @@ int main() {
 	cachedStereoCamCalibInput.camera1Result = &cachedCameraCalibResult;
 	cachedStereoCamCalibInput.camera2Result = &cachedCameraCalibResult;
 
-	CachedStereoCameraChessPatternCalibrateTask::Task cachedStereoCameraCalib;
+	CachedStereoCameraCalibrate::Task cachedStereoCameraCalib;
 	cachedStereoCameraCalib.Execute(cachedStereoCamCalibInput);
 
 	Mat _calibImg = imread("./data/calibration/common/StereoCamera0-1611526867375.png");
 	auto _imgSize = _calibImg.size();
 
 	auto stereoResult = cachedStereoCameraCalib.Result();
-	StereoRectify::Input rectifyInput;
+	StereoRectify::Input rectifyInput(_imgSize, cachedStereoCameraCalib.Result());
 	rectifyInput.imageSize = _imgSize;
 	rectifyInput.cameraMatrix1 = stereoResult.cameraMatrix0;
 	rectifyInput.cameraMatrix2 = stereoResult.cameraMatrix1;
@@ -331,6 +331,15 @@ int main() {
 
 	StereoRectify::Task rectify;
 	rectify.Execute(rectifyInput);
+	
+
+	InitUndistortRectifyMap::Input initUndistortRectifyMapInput;
+	initUndistortRectifyMapInput.cameraMatrix = cachedCameraCalibResult.cameraMatrix;
+	initUndistortRectifyMapInput.distCoeffs = cachedCameraCalibResult.distCoeffs;
+	initUndistortRectifyMapInput.R = rectify.Result().R1;
+	initUndistortRectifyMapInput.P = rectify.Result().P1;
+	InitUndistortRectifyMap::Task initUndistortRectifyMap;
+	initUndistortRectifyMap.Execute(initUndistortRectifyMapInput);
 
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
@@ -349,8 +358,8 @@ int main() {
 	Mat depth1Rmpd, depth2Rmpd;
 	
 
-	/*cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
-	cv::remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);*/
+	cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
+	cv::remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);
 
 	depth1Rmpd = depthL;
 	depth2Rmpd = depthR;
@@ -394,7 +403,7 @@ int main() {
 	sort(vecR.begin(), vecR.end(), comp);
 
 	Mat outMat(1, keypointsL.size(), CV_64F);
-	triangulatePoints(P1, P2, vecL, vecR, outMat);
+	//triangulatePoints(P1, P2, vecL, vecR, outMat);
 
 	using namespace std;
 	ifstream json_file("./data/depth/ObjectsDistances.json");

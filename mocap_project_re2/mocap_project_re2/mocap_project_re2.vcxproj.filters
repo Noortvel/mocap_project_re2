@@ -45,16 +45,19 @@
     <ClCompile Include="CameraChessPatternCalibrateTask.cpp">
       <Filter>Исходные файлы\Tasks</Filter>
     </ClCompile>
-    <ClCompile Include="StereoCameraChessPatternCalibrateTask.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="CachedCameraChessPatternCalibrateTask.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="CachedStereoCameraChessPatternCalibrateTask.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
     <ClCompile Include="StereoRectify.cpp">
+      <Filter>Исходные файлы\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="InitUndistortRectifyMap.cpp">
+      <Filter>Исходные файлы\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="CachedCameraCalibrate.cpp">
+      <Filter>Исходные файлы\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="CachedStereoCameraCalibrate.cpp">
+      <Filter>Исходные файлы\Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoCameraCalibrate.cpp">
       <Filter>Исходные файлы\Tasks</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,18 +77,6 @@
     <ClInclude Include="ITask.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="CameraChessPatternCalibrateTask.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="StereoCameraChessPatternCalibrateTask.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="CachedCameraChessPatternCalibrateTask.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="CachedStereoCameraChessPatternCalibrateTask.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
     <ClInclude Include="IFileCached.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -99,6 +90,21 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="StereoRectify.h">
+      <Filter>Файлы заголовков\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="InitUndistortRectifyMap.h">
+      <Filter>Файлы заголовков\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="CachedCameraCalibrate.h">
+      <Filter>Файлы заголовков\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraCalibrate.h">
+      <Filter>Файлы заголовков\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="CachedStereoCameraCalibrate.h">
+      <Filter>Файлы заголовков\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoCameraCalibrate.h">
       <Filter>Файлы заголовков\Tasks</Filter>
     </ClInclude>
   </ItemGroup>

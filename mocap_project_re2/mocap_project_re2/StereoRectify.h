@@ -1,11 +1,14 @@
 #pragma once
 #include "ITask.h"
-#include <opencv2\core.hpp>
+#include <opencv2\opencv.hpp>
 #include <vector>
+#include "StereoCameraCalibrate.h"
 
 namespace openmocap2 {
 	namespace StereoRectify {
 		struct Input {
+			Input();
+			Input(cv::Size2i& imageSize, const StereoCameraCalibrate::Result& stCamCalibResult);
 			cv::Size2i imageSize;
 			cv::Mat cameraMatrix1, distCoeffs1;
 			cv::Mat cameraMatrix2, distCoeffs2;

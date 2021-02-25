@@ -145,30 +145,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CachedCameraChessPatternCalibrateTask.cpp" />
-    <ClCompile Include="CachedStereoCameraChessPatternCalibrateTask.cpp" />
+    <ClCompile Include="CachedCameraCalibrate.cpp" />
+    <ClCompile Include="CachedStereoCameraCalibrate.cpp" />
     <ClCompile Include="CameraCalibratior.cpp" />
     <ClCompile Include="CameraChessPatternCalibrateTask.cpp" />
+    <ClCompile Include="InitUndistortRectifyMap.cpp" />
     <ClCompile Include="SceneSettings.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainProcessor.cpp" />
     <ClCompile Include="MainSettings.cpp" />
-    <ClCompile Include="StereoCameraChessPatternCalibrateTask.cpp" />
+    <ClCompile Include="StereoCameraCalibrate.cpp" />
     <ClCompile Include="StereoRectify.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CachedCameraChessPatternCalibrateTask.h" />
-    <ClInclude Include="CachedStereoCameraChessPatternCalibrateTask.h" />
+    <ClInclude Include="CachedCameraCalibrate.h" />
+    <ClInclude Include="CachedStereoCameraCalibrate.h" />
     <ClInclude Include="CameraCalibratior.h" />
-    <ClInclude Include="CameraChessPatternCalibrateTask.h" />
+    <ClInclude Include="CameraCalibrate.h" />
     <ClInclude Include="IFileCached.h" />
+    <ClInclude Include="InitUndistortRectifyMap.h" />
     <ClInclude Include="ITask.h" />
     <ClInclude Include="JsonHelper.h" />
     <ClInclude Include="NamePosition.h" />
     <ClInclude Include="SceneSettings.h" />
     <ClInclude Include="MainProcessor.h" />
     <ClInclude Include="MainSettings.h" />
-    <ClInclude Include="StereoCameraChessPatternCalibrateTask.h" />
+    <ClInclude Include="StereoCameraCalibrate.h" />
     <ClInclude Include="StereoRectify.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>

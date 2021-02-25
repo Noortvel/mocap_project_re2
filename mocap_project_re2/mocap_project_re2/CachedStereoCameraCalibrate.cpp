@@ -1,9 +1,9 @@
-#include "CachedStereoCameraChessPatternCalibrateTask.h"
+#include "CachedStereoCameraCalibrate.h"
 #include <fstream>
 #include <opencv2\opencv.hpp>
 #include <spdlog/spdlog.h>
 
-void CachedStereoCameraChessPatternCalibrateTask::Task::Execute(Input& input) {
+void openmocap2::CachedStereoCameraCalibrate::Task::Execute(Input& input) {
 	spdlog::debug("CachedStereoCameraChessPatternCalibrateTask started");
 	std::ifstream file(input.cachedResultFilePath);
 	if (file.good()) {
@@ -12,15 +12,15 @@ void CachedStereoCameraChessPatternCalibrateTask::Task::Execute(Input& input) {
 		spdlog::debug("Camera calib restored from cache");
 	}
 	else {
-		StereoCameraChessPatternCalibrateTask::Task stereoCamCalibTask;
+		StereoCameraCalibrate::Task stereoCamCalibTask;
 		stereoCamCalibTask.Execute(input);
-		result = std::move((const CachedStereoCameraChessPatternCalibrateTask::Result&)stereoCamCalibTask.Result());
+		result = std::move((const CachedStereoCameraCalibrate::Result&)stereoCamCalibTask.Result());
 		result.Save(input.cachedResultFilePath);
 	}
 	spdlog::debug("CachedStereoCameraChessPatternCalibrateTask ended");
 
 }
-void CachedStereoCameraChessPatternCalibrateTask::Result::Save(std::string& path)
+void openmocap2::CachedStereoCameraCalibrate::Result::Save(std::string& path)
 {
 	cv::FileStorage fs(path, cv::FileStorage::WRITE);
 
@@ -35,7 +35,7 @@ void CachedStereoCameraChessPatternCalibrateTask::Result::Save(std::string& path
 
 }
 
-void CachedStereoCameraChessPatternCalibrateTask::Result::Load(std::string& path)
+void openmocap2::CachedStereoCameraCalibrate::Result::Load(std::string& path)
 {
 	cv::FileStorage fs(path, cv::FileStorage::READ);
 	fs["cameraMatrix0"] >> cameraMatrix0;
