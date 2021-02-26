@@ -17,36 +17,10 @@ namespace openmocap2 {
 			void Load(std::string& path) override;
 		};
 		Result result;
-		void Execute(
-			Size2i& patternSize,
-			float cellSize,
-			string& calibrateImagesPathMask,
-			vector<Point3f>& chessboard3dPoints);
-		CameraCalibrate();
-		CameraCalibrate(string& cachePath);
-	private:
-		string cachePath;
-		bool isCached = false;
-		bool isLoaded = false;
+		virtual void Execute(
+			const Size2i& patternSize,
+			const float cellSize,
+			const string& calibrateImagesPathMask,
+			const vector<Point3f>& chessboard3dPoints);
 	};
-
-	namespace CameraCalibrate123 {
-		using namespace cv;
-		using namespace std;
-		struct Input {
-			Size2i patternSize;
-			float cellSize;
-			string calibrateImagesPathMask;
-			vector<Point3f>* chessboard3dPoints;
-		};
-		struct Result {
-			Mat cameraMatrix;
-			Mat distCoeffs;
-			vector<Mat> rvecs;
-			vector<Mat> tvecs;
-		};
-		struct Task : ITask<Input, Result> {
-			void Execute(Input& input) override;
-		};
-	}
 }

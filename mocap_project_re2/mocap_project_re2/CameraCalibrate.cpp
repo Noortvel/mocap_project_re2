@@ -3,22 +3,12 @@
 #include <fstream>
 
 void openmocap2::CameraCalibrate::Execute(
-	Size2i& patternSize,
-	float cellSize,
-	string& calibrateImagesPathMask,
-	vector<Point3f>& chessboard3dPoints)
+	const Size2i& patternSize,
+	const float cellSize,
+	const string& calibrateImagesPathMask,
+	const vector<Point3f>& chessboard3dPoints)
 {
 	spdlog::debug("CameraCalibrate started");
-	if (isCached) {
-		if (isLoaded) return;
-		std::ifstream file(cachePath);
-		if (file.good()) {
-			file.close();
-			result.Load(cachePath);
-			isLoaded = true;
-			spdlog::debug("Camera calib restored from cache");
-		}
-	}
 	vector<vector<Point2f>> findedCorners;
 	vector<vector<Point3f>> all3dPoints;
 
@@ -60,20 +50,7 @@ void openmocap2::CameraCalibrate::Execute(
 	spdlog::debug("Calibrate camera begin");
 	cv::calibrateCamera(all3dPoints, findedCorners, imageSize, result.cameraMatrix, result.distCoeffs, result.rvecs, result.tvecs, 0, TermCriteria((TermCriteria::EPS + TermCriteria::COUNT), 30, 0.001));
 	spdlog::debug("Calibrate camera end");
-	if (isCached) {
-		result.Save(cachePath);
-	}
 	spdlog::debug("CameraCalibrate ended");
-}
-
-openmocap2::CameraCalibrate::CameraCalibrate()
-{
-}
-
-openmocap2::CameraCalibrate::CameraCalibrate(string& cachePath)
-{
-	this->cachePath = cachePath;
-	isCached = true;
 }
 
 void openmocap2::CameraCalibrate::Result::Save(std::string& path)

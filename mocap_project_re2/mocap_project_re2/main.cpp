@@ -291,17 +291,18 @@ int main() {
 		}
 	}
 
-	//For syntatic data used 2 equals cameras
-	CachedCameraCalibrate::Input calibrateCameraCachedTaskInput;
-	calibrateCameraCachedTaskInput.cachedResultFilePath = "./data_cache/cameraCalibCommon.json";
-	calibrateCameraCachedTaskInput.calibrateImagesPathMask = "./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png";
-	calibrateCameraCachedTaskInput.cellSize = cellSize;
-	calibrateCameraCachedTaskInput.patternSize = patternSize;
-	calibrateCameraCachedTaskInput.chessboard3dPoints = &chessboardPoints3D;
+	auto calibCameraPathMask =
+		"./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png";
 
-	CachedCameraCalibrate::Task cachedCameraCalib;
-	cachedCameraCalib.Execute(calibrateCameraCachedTaskInput);
-	auto cachedCameraCalibResult = cachedCameraCalib.Result();
+	//For syntatic data used 2 equals cameras
+	CachedCameraCalibrate cacheCameraCalibrate("./data_cache/cameraCalibCommon.json");
+	cacheCameraCalibrate.Execute(
+		patternSize,
+		cellSize,
+		calibCameraPathMask,
+		chessboardPoints3D);
+
+	auto cachedCameraCalibResult = cacheCameraCalibrate.result;
 
 	CachedStereoCameraCalibrate::Input cachedStereoCamCalibInput;
 	cachedStereoCamCalibInput.cachedResultFilePath = "./data_cache/stereoCameraCalibCommon.json";

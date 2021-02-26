@@ -6,23 +6,19 @@
 
 namespace openmocap2 {
 
-	struct CachedCameraCalibrate {
+	struct CachedCameraCalibrate : public CameraCalibrate {
 		struct Result : public CameraCalibrate::Result, IFileCached {
-			void Save(std::string& path) override;
-			void Load(std::string& path) override;
+			void Save(string& path) override;
+			void Load(string& path) override;
 		};
-		void Execute();
+		void Execute(
+			const Size2i& patternSize,
+			const float cellSize,
+			const string& calibrateImagesPathMask,
+			const vector<Point3f>& chessboard3dPoints) override;
+		CachedCameraCalibrate(const string&& cachePath);
+	private:
+		string cachePath;
 	};
-
-	namespace CachedCameraCalibrate
-	{
-		struct Input : public CameraCalibrate::Input {
-			std::string cachedResultFilePath;
-		};
-		
-		struct Task : public ITask<Input, Result> {
-			void Execute(Input& input) override;
-		};
-	}
 }
 
