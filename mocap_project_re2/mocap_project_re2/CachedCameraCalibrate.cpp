@@ -42,7 +42,7 @@ void openmocap2::CachedCameraCalibrate::Execute(
 	spdlog::debug("CachedCameraChessPatternCalibrateTask ended");
 }
 
-openmocap2::CachedCameraCalibrate::CachedCameraCalibrate(const string&& cachePath)
+openmocap2::CachedCameraCalibrate::CachedCameraCalibrate(const string& cachePath)
 {
 	this->cachePath = cachePath;
 }

@@ -8,13 +8,11 @@ namespace openmocap2 {
 	using namespace cv;
 	using namespace std;
 	struct CameraCalibrate {
-		struct Result : public IFileCached {
+		struct Result {
 			Mat cameraMatrix;
 			Mat distCoeffs;
 			vector<Mat> rvecs;
 			vector<Mat> tvecs;
-			void Save(std::string& path) override;
-			void Load(std::string& path) override;
 		};
 		Result result;
 		virtual void Execute(

@@ -62,7 +62,8 @@ void openmocap2::CachedStereoCameraCalibrate::Execute(
 }
 
 openmocap2::CachedStereoCameraCalibrate::CachedStereoCameraCalibrate(
-	const string& cachePath)
+	const string&& cachePath,
+	const Size2i&& imageSize) : StereoCameraCalibrate(std::move(imageSize))
 {
 	this->cachePath = cachePath;
 }

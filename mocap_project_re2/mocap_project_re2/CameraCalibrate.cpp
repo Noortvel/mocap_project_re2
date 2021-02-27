@@ -52,21 +52,3 @@ void openmocap2::CameraCalibrate::Execute(
 	spdlog::debug("Calibrate camera end");
 	spdlog::debug("CameraCalibrate ended");
 }
-
-void openmocap2::CameraCalibrate::Result::Save(std::string& path)
-{
-	cv::FileStorage fs(path, cv::FileStorage::WRITE);
-	fs << "cameraMatrix" << cameraMatrix;
-	fs << "distCoeffs" << distCoeffs;
-	fs << "rvecs" << rvecs;
-	fs << "tvecs" << tvecs;
-}
-
-void openmocap2::CameraCalibrate::Result::Load(std::string& path)
-{
-	cv::FileStorage fs(path, cv::FileStorage::READ);
-	fs["cameraMatrix"] >> cameraMatrix;
-	fs["distCoeffs"] >> distCoeffs;
-	fs["rvecs"] >> rvecs;
-	fs["tvecs"] >> tvecs;
-}

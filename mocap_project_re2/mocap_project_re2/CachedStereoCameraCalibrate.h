@@ -4,18 +4,27 @@
 #include <string>
 
 namespace openmocap2 {
-	namespace CachedStereoCameraCalibrate
-	{
-		struct Input : public StereoCameraCalibrate::Input {
-			std::string cachedResultFilePath;
-		};
+	using namespace cv;
+	using namespace std;
+	struct CachedStereoCameraCalibrate : public StereoCameraCalibrate {
+		CachedStereoCameraCalibrate(const string& cachePath);
+		void Execute(
+			const Size2i& patternSize,
+			const float cellSize,
+			const string& camera1StereoCalibrateImagesPathMask,
+			const string& camera2StereoCalibrateImagesPathMask,
+			const vector<Point3f>& chessboard3dPoints,
+			const CameraCalibrate::Result& camera1Result,
+			const CameraCalibrate::Result& camera2Result);
 		struct Result : public StereoCameraCalibrate::Result, IFileCached {
 			void Save(std::string& path) override;
 			void Load(std::string& path) override;
 		};
-		struct Task : ITask<Input, Result> {
-			void Execute(Input& input) override;
-		};
-	}
+		Result result;
+
+		
+	private:
+		string cachePath;
+	};
 }
 

@@ -1,64 +1,12 @@
 #include "StereoCameraCalibrate.h"
 #include <spdlog/spdlog.h>
 
-
-void openmocap2::StereoCameraCalibrate::Task::Execute(Input& input) {
-	spdlog::debug("StereoCameraChessPatternCalibrateTask started");
-	vector<vector<Point2f>> planarPointsCam0;
-	vector<vector<Point2f>> planarPointsCam1;
-
-	int objectPointsCountCam0 = 0;
-	int objectPointsCountCam1 = 0;
-
-	CalculatePlanarAndObjectArraysOfPoints(
-		input.cameraLCalibrateImagesPathMask,
-		input.patternSize,
-		*input.chessboard3dPoints,
-		planarPointsCam0,
-		objectPointsCountCam0);
-	CalculatePlanarAndObjectArraysOfPoints(
-		input.cameraRCalibrateImagesPathMask,
-		input.patternSize,
-		*input.chessboard3dPoints,
-		planarPointsCam1,
-		objectPointsCountCam1);
-	int minObjPointsCount = std::min(objectPointsCountCam0, objectPointsCountCam1);
-	vector<vector<Point3f>> objectPoints;
-	for (int i = 0; i < objectPointsCountCam0 - minObjPointsCount; i++) {
-		planarPointsCam0.pop_back();
-	}
-	for (int i = 0; i < objectPointsCountCam1 - minObjPointsCount; i++) {
-		planarPointsCam1.pop_back();
-	}
-	for (int i = 0; i < minObjPointsCount; i++) {
-		objectPoints.push_back(*input.chessboard3dPoints);
-	}
-	result.imageSize = imageSize;
-	spdlog::debug("Begin stereo calibrate");
-	cv::stereoCalibrate(
-		objectPoints,
-		planarPointsCam0,
-		planarPointsCam1,
-		input.camera1Result->cameraMatrix,
-		input.camera1Result->distCoeffs,
-		input.camera2Result->cameraMatrix,
-		input.camera2Result->distCoeffs,
-		imageSize,
-		result.R,
-		result.T,
-		result.E,
-		result.F, CALIB_FIX_INTRINSIC
-	);
-	spdlog::debug("Ended stereo calibrate");
-	spdlog::debug("StereoCameraChessPatternCalibrateTask ended");
-}
-
-void openmocap2::StereoCameraCalibrate::Task::CalculatePlanarAndObjectArraysOfPoints(
-	string& imagesPath,
-	Size2i& pattenSize,
-	vector<Point3f>& chessboard3dPoints,
+void openmocap2::StereoCameraCalibrate::CalculatePlanarAndObjectArraysOfPoints(
+	const string& imagesPath,
+	const Size2i& pattenSize,
+	const vector<Point3f>& chessboard3dPoints,
 	vector<vector<Point2f>>& outPlanar,
-	int& objectsCount)
+	int& outObjectsCount)
 {
 	vector<string> inputPaths;
 	glob(imagesPath, inputPaths);
@@ -80,7 +28,7 @@ void openmocap2::StereoCameraCalibrate::Task::CalculatePlanarAndObjectArraysOfPo
 		if (succes) {
 			cornerSubPix(grayscale, corners, Size(11, 11), Size(-1, -1), TermCriteria((TermCriteria::EPS + TermCriteria::COUNT), 30, 0.001));
 			outPlanar.push_back(corners);
-			objectsCount++;
+			outObjectsCount++;
 			/*for (auto&& position : corners) {
 				drawMarker(imageMat, position, drawColor);
 				imshow(imageName, imageMat);
@@ -94,3 +42,60 @@ void openmocap2::StereoCameraCalibrate::Task::CalculatePlanarAndObjectArraysOfPo
 	spdlog::debug("Chessboard find end");
 }
 
+void openmocap2::StereoCameraCalibrate::Execute(
+	const Size2i& patternSize,
+	const float cellSize,
+	const string& camera1StereoCalibrateImagesPathMask,
+	const string& camera2StereoCalibrateImagesPathMask,
+	const vector<Point3f>& chessboard3dPoints,
+	const CameraCalibrate::Result& camera1Result,
+	const CameraCalibrate::Result& camera2Result)
+{
+	spdlog::debug("Begin StereoCameraCalibrate::Execute");
+	vector<vector<Point2f>> planarPointsCam0;
+	vector<vector<Point2f>> planarPointsCam1;
+
+	int objectPointsCountCam0 = 0;
+	int objectPointsCountCam1 = 0;
+
+	CalculatePlanarAndObjectArraysOfPoints(
+		camera1StereoCalibrateImagesPathMask,
+		patternSize,
+		chessboard3dPoints,
+		planarPointsCam0,
+		objectPointsCountCam0);
+	CalculatePlanarAndObjectArraysOfPoints(
+		camera2StereoCalibrateImagesPathMask,
+		patternSize,
+		chessboard3dPoints,
+		planarPointsCam1,
+		objectPointsCountCam1);
+	int minObjPointsCount = std::min(objectPointsCountCam0, objectPointsCountCam1);
+	vector<vector<Point3f>> objectPoints;
+	for (int i = 0; i < objectPointsCountCam0 - minObjPointsCount; i++) {
+		planarPointsCam0.pop_back();
+	}
+	for (int i = 0; i < objectPointsCountCam1 - minObjPointsCount; i++) {
+		planarPointsCam1.pop_back();
+	}
+	for (int i = 0; i < minObjPointsCount; i++) {
+		objectPoints.push_back(chessboard3dPoints);
+	}
+	spdlog::debug("Begin cv::stereoCalibrate");
+	cv::stereoCalibrate(
+		objectPoints,
+		planarPointsCam0,
+		planarPointsCam1,
+		camera1Result.cameraMatrix,
+		camera1Result.distCoeffs,
+		camera2Result.cameraMatrix,
+		camera2Result.distCoeffs,
+		imageSize,
+		result.R,
+		result.T,
+		result.E,
+		result.F, CALIB_FIX_INTRINSIC
+	);
+	spdlog::debug("Ended cv::stereoCalibrate");
+	spdlog::debug("Ended StereoCameraCalibrate::Execute");
+}
