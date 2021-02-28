@@ -16,12 +16,11 @@
 
 #include "MainProcessor.h"
 
-#include "CameraCalibratior.h"
+#include "FullStereoСalibration.h"
 #include "CameraCalibrate.h"
 #include "StereoCameraCalibrate.h"
 #include "CachedCameraCalibrate.h"
 #include "CachedStereoCameraCalibrate.h"
-
 #include "StereoRectify.h"
 #include "InitUndistortRectifyMap.h"
 
@@ -284,73 +283,14 @@ int main() {
 	//VideoBlobs();
 
 	spdlog::set_level(spdlog::level::debug);
-	auto patternSize = Size2i(6, 9);
-	auto cellSize = 2 * 0.025226f;//
-	vector<Point3f> chessboardPoints3D;
-	for (int y = patternSize.height - 1; y >= 0; y--) {
-		for (int x = 0; x < patternSize.width; x++) {
-			chessboardPoints3D.push_back(Point3f(x * cellSize, y * cellSize, 0.0f));
-		}
-	}
-	Mat _calibImg = imread("./data/calibration/common/StereoCamera0-1611526867375.png");
-	auto _imgSize = _calibImg.size();
-
-
-	//For syntatic data used 2 equals cameras
-	CachedCameraCalibrate cacheCameraCalibrate("./data_cache/cameraCalibCommon.json");
-	cacheCameraCalibrate.Execute(
-		patternSize,
-		cellSize,
-		"./data/calibration/inner_params/camera_common/Callibration-CameraCommon*.png",
-		chessboardPoints3D);
-
-	CachedStereoCameraCalibrate cachedStereoCameraCalib("./data_cache/stereoCameraCalibCommon.json");
-	cachedStereoCameraCalib.Execute(
-		patternSize,
-		cellSize,
-		"./data/calibration/common/StereoCamera0*.png",
-		"./data/calibration/common/StereoCamera1*.png",
-		chessboardPoints3D,
-		cacheCameraCalibrate.result,
-		cacheCameraCalibrate.result);
-
-
-	auto stereoResult = cachedStereoCameraCalib.result;
-	StereoRectify::Input rectifyInput(_imgSize, cachedStereoCameraCalib.result);
-	rectifyInput.imageSize = _imgSize;
-	rectifyInput.cameraMatrix1 = stereoResult.cameraMatrix0;
-	rectifyInput.cameraMatrix2 = stereoResult.cameraMatrix1;
-	rectifyInput.distCoeffs1 = stereoResult.distCoeffs0;
-	rectifyInput.distCoeffs2 = stereoResult.distCoeffs1;
-	rectifyInput.R = stereoResult.R;
-	rectifyInput.T = stereoResult.T;
-
-	StereoRectify::Task rectify;
-	rectify.Execute(rectifyInput);
 	
-	InitUndistortRectifyMap initUndistortRectifyMap1;
-	InitUndistortRectifyMap initUndistortRectifyMap2;
-
-	initUndistortRectifyMap1.Execute(
-		_imgSize,
-		cacheCameraCalibrate.result.cameraMatrix,
-		cacheCameraCalibrate.result.distCoeffs,
-		rectify.Result().R1,
-		rectify.Result().P1);
-
-	initUndistortRectifyMap2.Execute(
-		_imgSize,
-		cacheCameraCalibrate.result.cameraMatrix,
-		cacheCameraCalibrate.result.distCoeffs,
-		rectify.Result().R2,
-		rectify.Result().P2);
 
 
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
 	Mat depthR = imread("./data/depth/CameraR-Depth-.png");
 	
-	Mat map11, map12, map21, map22;
+	/*Mat map11, map12, map21, map22;
 	cv::initUndistortRectifyMap(
 		cacheCameraCalibrate.result.cameraMatrix,
 		cacheCameraCalibrate.result.distCoeffs,
@@ -358,13 +298,18 @@ int main() {
 	cv::initUndistortRectifyMap(
 		cacheCameraCalibrate.result.cameraMatrix,
 		cacheCameraCalibrate.result.distCoeffs,
-		rectify.Result().R2, rectify.Result().P2, _imgSize, CV_32F, map21, map22);
+		rectify.Result().R2, rectify.Result().P2, _imgSize, CV_32F, map21, map22);*/
+
+
 
 	Mat depth1Rmpd, depth2Rmpd;
-	
+	FullStereoСalibration stereoCalib;
+	stereoCalib.Calibrate();
 
-	cv::remap(depthL, depth1Rmpd, map11, map12, INTER_LINEAR);
-	cv::remap(depthR, depth2Rmpd, map21, map22, INTER_LINEAR);
+	cv::remap(depthL, depth1Rmpd,
+		stereoCalib.InitUndistortRectifyMap1().map1, stereoCalib.InitUndistortRectifyMap1().map2, INTER_LINEAR);
+	cv::remap(depthR, depth2Rmpd,
+		stereoCalib.InitUndistortRectifyMap2().map1, stereoCalib.InitUndistortRectifyMap2().map2, INTER_LINEAR);
 
 	depth1Rmpd = depthL;
 	depth2Rmpd = depthR;

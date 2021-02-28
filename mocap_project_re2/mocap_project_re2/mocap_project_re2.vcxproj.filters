@@ -13,24 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Файлы заголовков\Tasks">
-      <UniqueIdentifier>{0cdab83e-0162-4dd3-94ce-0de5b541266c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Tasks">
-      <UniqueIdentifier>{119b4fbc-1657-4db3-b81e-a460af3377d8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы заголовков\Structs">
       <UniqueIdentifier>{281e9d14-b14d-40b4-a8f2-720d8a8f8811}</UniqueIdentifier>
     </Filter>
     <Filter Include="Файлы заголовков\DepthTest">
       <UniqueIdentifier>{8272355f-2d5b-4a7b-8f28-bdc3d1ad57eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Core">
+      <UniqueIdentifier>{119b4fbc-1657-4db3-b81e-a460af3377d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Core">
+      <UniqueIdentifier>{0cdab83e-0162-4dd3-94ce-0de5b541266c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Core\Calib">
+      <UniqueIdentifier>{f863449a-369a-42d4-81bc-7017e74c7546}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Core\Calib">
+      <UniqueIdentifier>{dc4dee8f-3a5c-4ece-a22d-01b387316569}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraCalibratior.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="MainProcessor.cpp">
@@ -42,29 +45,29 @@
     <ClCompile Include="SceneSettings.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="StereoRectify.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="InitUndistortRectifyMap.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
     <ClCompile Include="CachedCameraCalibrate.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
+      <Filter>Исходные файлы\Core\Calib</Filter>
     </ClCompile>
     <ClCompile Include="CachedStereoCameraCalibrate.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="StereoCameraCalibrate.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
+      <Filter>Исходные файлы\Core\Calib</Filter>
     </ClCompile>
     <ClCompile Include="CameraCalibrate.cpp">
-      <Filter>Исходные файлы\Tasks</Filter>
+      <Filter>Исходные файлы\Core\Calib</Filter>
+    </ClCompile>
+    <ClCompile Include="InitUndistortRectifyMap.cpp">
+      <Filter>Исходные файлы\Core\Calib</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoCameraCalibrate.cpp">
+      <Filter>Исходные файлы\Core\Calib</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoRectify.cpp">
+      <Filter>Исходные файлы\Core\Calib</Filter>
+    </ClCompile>
+    <ClCompile Include="FullStereoСalibration.cpp">
+      <Filter>Исходные файлы\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraCalibratior.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="MainProcessor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -89,23 +92,26 @@
     <ClInclude Include="JsonHelper.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="StereoRectify.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="InitUndistortRectifyMap.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
     <ClInclude Include="CachedCameraCalibrate.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraCalibrate.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
+      <Filter>Файлы заголовков\Core\Calib</Filter>
     </ClInclude>
     <ClInclude Include="CachedStereoCameraCalibrate.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
+      <Filter>Файлы заголовков\Core\Calib</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraCalibrate.h">
+      <Filter>Файлы заголовков\Core\Calib</Filter>
+    </ClInclude>
+    <ClInclude Include="InitUndistortRectifyMap.h">
+      <Filter>Файлы заголовков\Core\Calib</Filter>
     </ClInclude>
     <ClInclude Include="StereoCameraCalibrate.h">
-      <Filter>Файлы заголовков\Tasks</Filter>
+      <Filter>Файлы заголовков\Core\Calib</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoRectify.h">
+      <Filter>Файлы заголовков\Core\Calib</Filter>
+    </ClInclude>
+    <ClInclude Include="FullStereoСalibration.h">
+      <Filter>Файлы заголовков\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

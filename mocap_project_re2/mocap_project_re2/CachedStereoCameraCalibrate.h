@@ -6,7 +6,7 @@
 namespace openmocap2 {
 	using namespace cv;
 	using namespace std;
-	struct CachedStereoCameraCalibrate : public StereoCameraCalibrate {
+	struct CachedStereoCameraCalibrate : public StereoCameraCalibrate, IFileCached {
 		CachedStereoCameraCalibrate(const string& cachePath);
 		void Execute(
 			const Size2i& patternSize,
@@ -16,13 +16,8 @@ namespace openmocap2 {
 			const vector<Point3f>& chessboard3dPoints,
 			const CameraCalibrate::Result& camera1Result,
 			const CameraCalibrate::Result& camera2Result);
-		struct Result : public StereoCameraCalibrate::Result, IFileCached {
-			void Save(std::string& path) override;
-			void Load(std::string& path) override;
-		};
-		Result result;
-
-		
+		void Save(std::string& path) override;
+		void Load(std::string& path) override;
 	private:
 		string cachePath;
 	};

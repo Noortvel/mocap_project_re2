@@ -147,7 +147,7 @@
   <ItemGroup>
     <ClCompile Include="CachedCameraCalibrate.cpp" />
     <ClCompile Include="CachedStereoCameraCalibrate.cpp" />
-    <ClCompile Include="CameraCalibratior.cpp" />
+    <ClCompile Include="FullStereoСalibration.cpp" />
     <ClCompile Include="CameraCalibrate.cpp" />
     <ClCompile Include="InitUndistortRectifyMap.cpp" />
     <ClCompile Include="SceneSettings.cpp" />
@@ -160,7 +160,7 @@
   <ItemGroup>
     <ClInclude Include="CachedCameraCalibrate.h" />
     <ClInclude Include="CachedStereoCameraCalibrate.h" />
-    <ClInclude Include="CameraCalibratior.h" />
+    <ClInclude Include="FullStereoСalibration.h" />
     <ClInclude Include="CameraCalibrate.h" />
     <ClInclude Include="IFileCached.h" />
     <ClInclude Include="InitUndistortRectifyMap.h" />

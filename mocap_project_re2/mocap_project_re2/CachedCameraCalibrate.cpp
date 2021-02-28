@@ -3,22 +3,22 @@
 #include <opencv2/opencv.hpp>
 #include <spdlog/spdlog.h>
 
-void openmocap2::CachedCameraCalibrate::Result::Save(std::string& path)
+void openmocap2::CachedCameraCalibrate::Save(std::string& path)
 {
 	cv::FileStorage fs(path, cv::FileStorage::WRITE);
-	fs << "cameraMatrix" << cameraMatrix;
-	fs << "distCoeffs" << distCoeffs;
-	fs << "rvecs" << rvecs;
-	fs << "tvecs" << tvecs;
+	fs << "cameraMatrix" << result.cameraMatrix;
+	fs << "distCoeffs" << result.distCoeffs;
+	fs << "rvecs" << result.rvecs;
+	fs << "tvecs" << result.tvecs;
 }
 
-void openmocap2::CachedCameraCalibrate::Result::Load(std::string& path)
+void openmocap2::CachedCameraCalibrate::Load(std::string& path)
 {
 	cv::FileStorage fs(path, cv::FileStorage::READ);
-	fs["cameraMatrix"] >> cameraMatrix;
-	fs["distCoeffs"] >> distCoeffs;
-	fs["rvecs"] >> rvecs;
-	fs["tvecs"] >> tvecs;
+	fs["cameraMatrix"] >> result.cameraMatrix;
+	fs["distCoeffs"] >> result.distCoeffs;
+	fs["rvecs"] >> result.rvecs;
+	fs["tvecs"] >> result.tvecs;
 }
 
 void openmocap2::CachedCameraCalibrate::Execute(
@@ -31,13 +31,12 @@ void openmocap2::CachedCameraCalibrate::Execute(
 	std::ifstream file(cachePath);
 	if (file.good()) {
 		file.close();
-		result.Load(cachePath);
+		Load(cachePath);
 		spdlog::debug("Camera calib restored from cache");
 	}
 	else {
 		CameraCalibrate::Execute(patternSize, cellSize, calibrateImagesPathMask, chessboard3dPoints);
-		result = std::move(static_cast<Result&>(CameraCalibrate::result));
-		result.Save(cachePath);
+		Save(cachePath);
 	}
 	spdlog::debug("CachedCameraChessPatternCalibrateTask ended");
 }

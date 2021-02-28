@@ -3,31 +3,40 @@
 #include <opencv2\opencv.hpp>
 #include <spdlog/spdlog.h>
 
-void openmocap2::CachedStereoCameraCalibrate::Result::Save(std::string& path)
+void openmocap2::CachedStereoCameraCalibrate::Save(std::string& path)
 {
 	cv::FileStorage fs(path, cv::FileStorage::WRITE);
-	fs << "cameraMatrix0" << cameraMatrix0;
-	fs << "distCoeffs0" << distCoeffs0;
-	fs << "cameraMatrix1" << cameraMatrix1;
-	fs << "distCoeffs1" << distCoeffs1;
-	fs << "R" << R;
-	fs << "T" << T;
-	fs << "E" << T;
-	fs << "F" << T;
+	fs << "cameraMatrix0" << result.cameraMatrix0;
+	fs << "distCoeffs0" << result.distCoeffs0;
+	fs << "cameraMatrix1" << result.cameraMatrix1;
+	fs << "distCoeffs1" << result.distCoeffs1;
+	fs << "R" << result.R;
+	fs << "T" << result.T;
+	fs << "E" << result.E;
+	fs << "F" << result.F;
 
 }
 
-void openmocap2::CachedStereoCameraCalibrate::Result::Load(std::string& path)
+void openmocap2::CachedStereoCameraCalibrate::Load(std::string& path)
 {
 	cv::FileStorage fs(path, cv::FileStorage::READ);
-	fs["cameraMatrix0"] >> cameraMatrix0;
-	fs ["distCoeffs0"] >> distCoeffs0;
-	fs ["cameraMatrix1"] >> cameraMatrix1;
-	fs ["distCoeffs1"] >> distCoeffs1;
-	fs ["R"] >> R;
-	fs ["T"] >> T;
-	fs ["E"] >> T;
-	fs ["F"] >> T;
+	fs ["cameraMatrix0"] >> result.cameraMatrix0;
+	fs ["distCoeffs0"] >> result.distCoeffs0;
+	fs ["cameraMatrix1"] >> result.cameraMatrix1;
+	fs ["distCoeffs1"] >> result.distCoeffs1;
+	fs ["R"] >> result.R;
+	fs ["T"] >> result.T;
+	fs ["E"] >> result.E;
+	fs ["F"] >> result.F;
+	cout << "cameraMatrix0" << result.cameraMatrix0 << endl;
+	cout << "distCoeffs0" << result.distCoeffs0 << endl;
+	cout << "cameraMatrix1" << result.cameraMatrix1 << endl;
+	cout << "distCoeffs1" << result.distCoeffs1 << endl;
+
+	cout << "R" << result.R << endl;
+	cout << "T" << result.T << endl;
+	cout << "E" << result.E << endl;
+	cout << "F" << result.F << endl;
 }
 
 void openmocap2::CachedStereoCameraCalibrate::Execute(
@@ -43,7 +52,7 @@ void openmocap2::CachedStereoCameraCalibrate::Execute(
 	std::ifstream file(cachePath);
 	if (file.good()) {
 		file.close();
-		result.Load(cachePath);
+		Load(cachePath);
 		spdlog::debug("Camera calib restored from cache");
 	}
 	else {
@@ -55,8 +64,7 @@ void openmocap2::CachedStereoCameraCalibrate::Execute(
 			chessboard3dPoints,
 			camera1Result,
 			camera2Result);
-		result = std::move(static_cast<CachedStereoCameraCalibrate::Result&> (StereoCameraCalibrate::result));
-		result.Save(cachePath);
+		Save(cachePath);
 	}
 	spdlog::debug("CachedStereoCameraChessPatternCalibrateTask ended");
 }
