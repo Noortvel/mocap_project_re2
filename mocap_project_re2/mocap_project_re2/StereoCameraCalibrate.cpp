@@ -96,6 +96,10 @@ void openmocap2::StereoCameraCalibrate::Execute(
 		result.E,
 		result.F, CALIB_FIX_INTRINSIC
 	);
+	result.cameraMatrix0 = camera1Result.cameraMatrix;
+	result.distCoeffs0 = camera1Result.distCoeffs;
+	result.cameraMatrix1 = camera2Result.cameraMatrix;
+	result.distCoeffs1 = camera2Result.distCoeffs;
 	spdlog::debug("Ended cv::stereoCalibrate");
 	spdlog::debug("Ended StereoCameraCalibrate::Execute");
 }

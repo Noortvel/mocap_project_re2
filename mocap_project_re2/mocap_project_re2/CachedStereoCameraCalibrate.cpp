@@ -32,7 +32,6 @@ void openmocap2::CachedStereoCameraCalibrate::Load(std::string& path)
 	cout << "distCoeffs0" << result.distCoeffs0 << endl;
 	cout << "cameraMatrix1" << result.cameraMatrix1 << endl;
 	cout << "distCoeffs1" << result.distCoeffs1 << endl;
-
 	cout << "R" << result.R << endl;
 	cout << "T" << result.T << endl;
 	cout << "E" << result.E << endl;

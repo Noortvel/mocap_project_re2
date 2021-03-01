@@ -13,8 +13,8 @@ namespace openmocap2 {
 			const StereoCameraCalibrate::Result& scc);
 		struct Result
 		{
-			cv::Mat R1, R2, P1, P2, Q;
-			cv::Rect ROI1, ROI2;
+			Mat R1, R2, P1, P2, Q;
+			//Rect ROI1, ROI2;
 		};
 		Result result;
 	};
