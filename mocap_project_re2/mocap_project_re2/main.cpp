@@ -279,32 +279,17 @@ void VideoBlobs() {
 
 int main() {
 	//MainProcessor mainProceccor;
-
 	//VideoBlobs();
 
 	spdlog::set_level(spdlog::level::debug);
-	
-
+	FullStereoСalibration stereoCalib;
+	stereoCalib.Calibrate();
 
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
 	Mat depthR = imread("./data/depth/CameraR-Depth-.png");
-	
-	/*Mat map11, map12, map21, map22;
-	cv::initUndistortRectifyMap(
-		cacheCameraCalibrate.result.cameraMatrix,
-		cacheCameraCalibrate.result.distCoeffs,
-		rectify.Result().R1, rectify.Result().P1, _imgSize, CV_32F, map11, map12);
-	cv::initUndistortRectifyMap(
-		cacheCameraCalibrate.result.cameraMatrix,
-		cacheCameraCalibrate.result.distCoeffs,
-		rectify.Result().R2, rectify.Result().P2, _imgSize, CV_32F, map21, map22);*/
-
-
 
 	Mat depth1Rmpd, depth2Rmpd;
-	FullStereoСalibration stereoCalib;
-	stereoCalib.Calibrate();
 
 	cv::remap(depthL, depth1Rmpd,
 		stereoCalib.InitUndistortRectifyMap1().map1, stereoCalib.InitUndistortRectifyMap1().map2, INTER_LINEAR);
@@ -353,7 +338,7 @@ int main() {
 	sort(vecR.begin(), vecR.end(), comp);
 
 	Mat outMat(1, keypointsL.size(), CV_64F);
-	//triangulatePoints(P1, P2, vecL, vecR, outMat);
+	triangulatePoints(stereoCalib.Rectify().P1, stereoCalib.Rectify().P2, vecL, vecR, outMat);
 
 	using namespace std;
 	ifstream json_file("./data/depth/ObjectsDistances.json");
