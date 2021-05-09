@@ -160,7 +160,7 @@
   <ItemGroup>
     <ClInclude Include="CachedCameraCalibrate.h" />
     <ClInclude Include="CachedStereoCameraCalibrate.h" />
-    <ClInclude Include="FullStereoСalibration.h" />
+    <ClInclude Include="FullStereoCalibration.h" />
     <ClInclude Include="CameraCalibrate.h" />
     <ClInclude Include="IFileCached.h" />
     <ClInclude Include="InitUndistortRectifyMap.h" />

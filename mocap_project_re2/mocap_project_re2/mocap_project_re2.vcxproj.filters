@@ -31,6 +31,9 @@
     <Filter Include="Файлы заголовков\Core\Calib">
       <UniqueIdentifier>{dc4dee8f-3a5c-4ece-a22d-01b387316569}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Core\Detect">
+      <UniqueIdentifier>{757e2680-1c38-4ee8-b857-30a5e015be20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -64,7 +67,7 @@
       <Filter>Исходные файлы\Core\Calib</Filter>
     </ClCompile>
     <ClCompile Include="FullStereoСalibration.cpp">
-      <Filter>Исходные файлы\Core</Filter>
+      <Filter>Исходные файлы\Core\Calib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,8 +113,8 @@
     <ClInclude Include="StereoRectify.h">
       <Filter>Файлы заголовков\Core\Calib</Filter>
     </ClInclude>
-    <ClInclude Include="FullStereoСalibration.h">
-      <Filter>Файлы заголовков\Core</Filter>
+    <ClInclude Include="FullStereoCalibration.h">
+      <Filter>Файлы заголовков\Core\Calib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

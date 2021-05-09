@@ -6,6 +6,8 @@
 #include <fstream>
 #include "json\json_struct.h"
 #include <opencv2/core/persistence.hpp>
+#include <opencv2/dnn/dnn.hpp>
+
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 
@@ -16,14 +18,16 @@
 
 #include "MainProcessor.h"
 
-#include "FullStereoСalibration.h"
+#include "FullStereoCalibration.h"
 #include "CameraCalibrate.h"
 #include "StereoCameraCalibrate.h"
 #include "CachedCameraCalibrate.h"
 #include "CachedStereoCameraCalibrate.h"
 #include "StereoRectify.h"
 #include "InitUndistortRectifyMap.h"
-
+#include <limits>
+#include <algorithm>
+#include <map>
 
 using namespace cv;
 using namespace cv::Error;
@@ -42,8 +46,8 @@ void FindDistancions(float _focalLenght) {
 
 	double thresh = 90;
 	double maxValue = 255;
-	threshold(gImgL, gImgL, thresh, maxValue, THRESH_BINARY);
-	threshold(gImgR, gImgR, thresh, maxValue, THRESH_BINARY);
+	cv::threshold(gImgL, gImgL, thresh, maxValue, THRESH_BINARY);
+	cv::threshold(gImgR, gImgR, thresh, maxValue, THRESH_BINARY);
 
 	SimpleBlobDetector::Params params;
 	params.minDistBetweenBlobs = 0;
@@ -85,7 +89,7 @@ void FindDistancions(float _focalLenght) {
 		auto& itemR = keypointsR[i];
 		auto point1 = itemL.pt.x - itemR.pt.x;
 		float Z1 = point1 * 1 / (distance * focalLenght);
-		cout << "Distance on shpere = " << Z1 << endl;
+		std::cout << "Distance on shpere = " << Z1 << endl;
 
 	}
 }
@@ -117,7 +121,7 @@ void oldDetection() {
 	int image_width, image_height = -1;
 	Size image_size;
 
-	cout << "Chessboard find begin" << endl;
+	std::cout << "Chessboard find begin" << endl;
 	int chessboardIndex = 0;
 	for (auto&& imageName : inputImagesPaths) {
 		chessboardIndex++;
@@ -128,7 +132,7 @@ void oldDetection() {
 		image_size.width = imageMat.cols;
 
 		bool succes = findChessboardCorners(imageMat, patternSize, corners);
-		cout << imageName << " Chessboard [" << chessboardIndex << "/" << inputImagesPaths.size() << "] " << succes << endl;
+		std::cout << imageName << " Chessboard [" << chessboardIndex << "/" << inputImagesPaths.size() << "] " << succes << endl;
 		Mat grayscale;
 		cv::cvtColor(imageMat, grayscale, ColorConversionCodes::COLOR_BGR2GRAY);
 		if (succes) {
@@ -149,25 +153,25 @@ void oldDetection() {
 		/*if (succes) {
 		}*/
 	}
-	cout << "Chessboard find end" << endl;
+	std::cout << "Chessboard find end" << endl;
 
-	cout << "Find corners end" << endl;
+	std::cout << "Find corners end" << endl;
 
 	Mat camerMatrix = Mat(3, 3, CV_32FC1);//instricts//CV_32FC1
 	Mat distCoeffs;
 	vector<Mat> rvecs;
 	vector<Mat> tvecs;
 
-	cout << "Calibrate camera begin" << endl;
+	std::cout << "Calibrate camera begin" << endl;
 
 	calibrateCamera(all_3dpoints, finded_corners, image_size, camerMatrix, distCoeffs, rvecs, tvecs, 0, TermCriteria((TermCriteria::EPS + TermCriteria::COUNT), 30, 0.001));
-	cout << "Calibrate camera end" << endl;
-	cout << "Camera matrix = \n" << camerMatrix << endl;
-	cout << "Dist coeffs = \n " << distCoeffs << endl;
+	std::cout << "Calibrate camera end" << endl;
+	std::cout << "Camera matrix = \n" << camerMatrix << endl;
+	std::cout << "Dist coeffs = \n " << distCoeffs << endl;
 
 
 	float_t _focalLenght = camerMatrix.at<float_t>(0, 0);
-	cout << _focalLenght << endl;
+	std::cout << _focalLenght << endl;
 	FindDistancions(_focalLenght);
 
 	/*cout << "Rotate vectors: " << endl;
@@ -198,12 +202,12 @@ void MatWork() {
 	float& a = camerMatrix.at<float>(0, 0);
 	a = 100;
 
-	cout << camerMatrix << endl;
+	std::cout << camerMatrix << endl;
 }
 
 void PlayVideo(VideoCapture cap) {
 	double fps = cap.get(CAP_PROP_FPS);
-	cout << "Frames per seconds : " << fps << endl;
+	std::cout << "Frames per seconds : " << fps << endl;
 
 	String window_name = "My First Video";
 
@@ -217,7 +221,7 @@ void PlayVideo(VideoCapture cap) {
 		//Breaking the while loop at the end of the video
 		if (bSuccess == false)
 		{
-			cout << "Found the end of the video" << endl;
+			std::cout << "Found the end of the video" << endl;
 			break;
 		}
 
@@ -228,9 +232,9 @@ void PlayVideo(VideoCapture cap) {
 		//If the 'Esc' key is pressed, break the while loop.
 		//If the any other key is pressed, continue the loop 
 		//If any key is not pressed withing 10 ms, continue the loop
-		if (waitKey(10) == 27)
+		if (cv::waitKey(10) == 27)
 		{
-			cout << "Esc key is pressed by user. Stoppig the video" << endl;
+			std::cout << "Esc key is pressed by user. Stoppig the video" << endl;
 			break;
 		}
 	}
@@ -255,7 +259,7 @@ void VideoBlobs() {
 	Mat frame;
 	Mat frameWithKeyPoints;
 
-	cout << "Find blobs started" << endl;
+	std::cout << "Find blobs started" << endl;
 	bool isSucces = false;
 	while (true) {
 		bool bSuccess = videoR.read(frame);
@@ -265,25 +269,232 @@ void VideoBlobs() {
 
 		double thresh = 210;//90//150
 		double maxValue = 255;
-		threshold(thresholdMat, thresholdMat, thresh, maxValue, THRESH_BINARY);
+		cv::threshold(thresholdMat, thresholdMat, thresh, maxValue, THRESH_BINARY);
 		detector->detect(thresholdMat, keypointsL);
 		drawKeypoints(thresholdMat, keypointsL, frameWithKeyPoints, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
 		keypointsL.clear();
 		imshow("Main", frameWithKeyPoints);
-		waitKey(100);
+		cv::waitKey(100);
 	}
-	cout << "Find blobs ended, press any key" << endl;
+	std::cout << "Find blobs ended, press any key" << endl;
 	cv::waitKey(0);
+}
+
+
+string CocoKeyPointToString(int keypoint) {
+	static map<int, string> keypoins = {
+		{0, "nose"},
+		{1, "left_eye"},
+		{2, "right_eye"},
+		{3  ,"left_ear"},
+		{4  ,"right_ear"},
+		{5  ,"left_shoulder"},
+		{6  ,"right_shoulder"},
+		{7  ,"left_elbow"},
+		{8  ,"right_elbow"},
+		{9  ,"left_wrist"},
+		{10 , "right_wrist"},
+		{11 , "left_hip"},
+		{12 , "right_hip"},
+		{13 , "left_knee"},
+		{14 , "right_knee"},
+		{15 , "left_ankle"},
+		{16 , "right_ankle"}
+	};
+	return keypoins[keypoint];
 }
 
 int main() {
 	//MainProcessor mainProceccor;
 	//VideoBlobs();
 
+	//2.jpg
+	//i3.png
+	//m1.png
+	auto testImg = cv::imread("./data/dnn_test/m1.png", cv::IMREAD_COLOR);
+	Mat sourceImageTransformed;
+
+	cv::resize(testImg, sourceImageTransformed, Size(192, 256));
+	cv::cvtColor(sourceImageTransformed, sourceImageTransformed, COLOR_BGR2RGB);
+
+
+	//cv::normalize(testImg2Fitted, testImg2Fitted, 0, 1, cv::NORM_MINMAX);
+
+	auto inputMean = cv::mean(sourceImageTransformed);
+	cout << inputMean << endl;
+
+	auto testImg2FittedType = sourceImageTransformed.type();
+	auto srctypeStr = cv::typeToString(testImg2FittedType);
+
+	Mat testImgNormalized;
+	sourceImageTransformed.convertTo(testImgNormalized, CV_32FC3); //(double)1 / (double)255
+	cout << "testImgNormalizedMean " << cv::mean(testImgNormalized) << endl;
+
+	cv::normalize(testImgNormalized, testImgNormalized, 1, 0, cv::NORM_MINMAX);
+
+	//[0.485, 0.456, 0.406]
+	auto targetMean = Scalar(0.485, 0.456, 0.406);
+	auto imgMean = cv::mean(testImgNormalized);
+	auto meanToAdd = targetMean - imgMean;
+
+
+	Mat tMean = Mat({ 0.485, 0.456, 0.406 });
+	Mat tStd = Mat({ 0.229, 0.224, 0.225 });
+
+	Mat meanNrm, stdNrm;
+	cv::meanStdDev(testImgNormalized, meanNrm, stdNrm);
+	
+	Mat meanAdd, stdAdd;
+
+	cv::subtract(tMean, meanNrm, meanAdd);
+	cv::subtract(tStd, stdNrm, meanAdd);
+
+	auto _sa = cv::typeToString(meanNrm.type());
+	double val = meanNrm.at<double>(0);
+
+	//meanNrm.convertTo()
+	cout << "mean " << meanNrm << endl << "std " << stdNrm << endl;
+
+	
+	for (int i = 0; i < testImgNormalized.cols; i++) {
+		for (int j = 0; j < testImgNormalized.rows; j++) {
+			auto& intensity = testImgNormalized.at<Vec3f>(j, i);
+			for (int k = 0; k < testImgNormalized.channels(); k++) {
+				intensity.val[k] -= meanNrm.at<double>(k);
+				intensity.val[k] /= stdNrm.at<double>(k);
+				intensity.val[k] *= tStd.at<double>(k);
+				intensity.val[k] += tMean.at<double>(k);
+			}
+		}
+	}
+
+	cv::meanStdDev(testImgNormalized, meanNrm, stdNrm);
+	cout << "mean " << meanNrm << endl << "std " << stdNrm << endl;
+
+	sourceImageTransformed = testImgNormalized;
+
+
+
+	//cv::meanStdDev(testImgNormalized, meanNrm, stdNrm);
+
+	/*auto testBlob = cv::dnn::blobFromImage(testImg2Fitted);
+	auto testBlobMean = cv::mean(testBlob);
+	cout << testBlobMean << endl;*/
+	
+	//./dnn_models/mmpose_hrnet_w32_coco_topdown_256x192.onnx -- broken
+	//./dnn_models/pose_hrnet_w32_256x192.onnx -- worked
+	//./dnn_models/mmpose_hrnet_w32_coco_256x192_handzoo.onnx -- worked
+
+	auto uniposeDnn = cv::dnn::readNetFromONNX("./dnn_models/pose_hrnet_w32_256x192.onnx");
+
+	std::cout << "in img size: " << sourceImageTransformed.size << endl;
+	//1 3 256 192
+	auto blob = cv::dnn::blobFromImage(sourceImageTransformed);
+	std::cout << "in blob size: " << blob.size << endl;
+	uniposeDnn.setInput(blob);
+	auto outBlob = uniposeDnn.forward();
+	std::cout << "out blob size: " << outBlob.size << endl;
+
+	vector<Mat> heatmaps;
+	float minVal = numeric_limits<float>::min();
+	float maxVal = numeric_limits<float>::max();
+
+	Mat showMixed;
+	int fitWidth = 192 * 3;
+	int fitHeight = 256 * 3;
+	Mat heatMapsmShow = Mat(Size(fitWidth, fitHeight), CV_32F);
+	cv::resize(testImg, showMixed, Size(fitWidth, fitHeight));
+
+	size_t keyPoints = 17;
+	for (size_t layer = 0; layer < keyPoints; layer++) {
+		heatmaps.push_back(Mat(Size(48, 64), outBlob.type()));
+		Mat& hm = heatmaps.back();
+		for (int y = 0; y < 64; y++) {
+			for (int x = 0; x < 48; x++) {
+				float& val = hm.at<float>(y, x);
+				float& srcVal = outBlob.at<float>(Vec<int, 4>(0, layer, y, x));
+				val = srcVal;
+				minVal = std::min(val, minVal);
+				maxVal = std::max(val, maxVal);
+			}
+		}
+
+		
+		Mat hmImageShow;
+		cv::resize(hm, hmImageShow, Size(fitWidth, fitHeight));
+
+		cv::normalize(hmImageShow, hmImageShow, 0, 1, cv::NORM_MINMAX);
+		cv::threshold(hmImageShow, hmImageShow, 0.5, 1, cv::THRESH_TOZERO);
+		
+		
+		Mat hmColorizedShow;
+		hmImageShow.convertTo(hmColorizedShow, CV_8UC3, 255);
+		cv::cvtColor(hmColorizedShow, hmColorizedShow, COLOR_GRAY2RGB);
+		//cv::applyColorMap(hmColorizedShow, hmColorizedShow, COLORMAP_JET);
+
+		cv::addWeighted(heatMapsmShow, 1, hmImageShow, 1, 0, heatMapsmShow);
+		//cv::addWeighted(showMixed, 0.5, hmColorizedShow, 1, 0, showMixed);
+		
+		//cv::putText(showMixed, "layer: " + std::to_string(layer) + CocoKeyPointToString(layer), cv::Point(50, 50), cv::FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
+
+		//cv::imwrite("layer_" + std::to_string(layer) + ".png", showMixed);
+		std::cout << layer << endl;
+		//std::cout << "dtLen: " << dtLen << endl;
+	}
+
+	cv::normalize(heatMapsmShow, heatMapsmShow, 0, 1, cv::NORM_MINMAX);
+	heatMapsmShow.convertTo(heatMapsmShow, CV_8UC3, 255);
+	cv::cvtColor(heatMapsmShow, heatMapsmShow, COLOR_GRAY2RGB);
+	cv::applyColorMap(heatMapsmShow, heatMapsmShow, COLORMAP_JET);
+
+	cv::applyColorMap(heatMapsmShow, heatMapsmShow, COLORMAP_JET);
+	cv::addWeighted(showMixed, 0.5, heatMapsmShow, 1, 0, showMixed);
+
+	cv::imshow("MM", heatMapsmShow);
+	cv::waitKey();
+
+	
+
+	/*cv::FileStorage fs("./ttt2.json", cv::FileStorage::WRITE);
+	fs << "matrix" << mm;
+	fs.release();
+
+	cout << mm;
+	*/
+
+	
+	//auto mh = outBlob.at<Mat>(cv::Vec<int, 2>(1, 1));
+
+
+	//auto outBlobSize = outBlob.size;
+	//std::cout << outBlobSize << endl;
+
+	vector<Mat> outImgs;
+	cv::dnn::imagesFromBlob(outBlob, outImgs);
+
+	auto outImageSize = outImgs[0].size;
+	std::cout << outImageSize << endl;
+
+	//cout << outImgs[0] << endl;
+
+	/*
+	cv::FileStorage fs("./ttt2.json", cv::FileStorage::WRITE);
+	fs << "matrix" << outBlob;
+	fs.release();
+	*/
+
+	//imshow("Main", outImgs[0]);
+
+	cv::waitKey();
+	return 0;
+
 	spdlog::set_level(spdlog::level::debug);
 	FullStereoСalibration stereoCalib;
 	stereoCalib.Calibrate();
+
+
+
 
 	//DEPTH TESTER
 	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
@@ -316,7 +527,7 @@ int main() {
 	double thresh = 90;//90//150
 	double maxValue = 255;
 	cv::threshold(depthLGray, depthLGray, thresh, maxValue, THRESH_BINARY);
-	threshold(depthRGray, depthRGray, thresh, maxValue, THRESH_BINARY);
+	cv::threshold(depthRGray, depthRGray, thresh, maxValue, THRESH_BINARY);
 
 	detector->detect(depthLGray, keypointsL);
 	detector->detect(depthRGray, keypointsR);
@@ -334,11 +545,11 @@ int main() {
 	for (auto& iter : keypointsL) vecL.push_back(iter.pt);
 	for (auto& iter : keypointsR) vecR.push_back(iter.pt);
 	auto comp = [](Point2f& a, Point2f& b) { return a.y > b.y; };
-	sort(vecL.begin(), vecL.end(), comp);
-	sort(vecR.begin(), vecR.end(), comp);
+	std::sort(vecL.begin(), vecL.end(), comp);
+	std::sort(vecR.begin(), vecR.end(), comp);
 
 	Mat outMat(1, keypointsL.size(), CV_64F);
-	triangulatePoints(stereoCalib.Rectify().P1, stereoCalib.Rectify().P2, vecL, vecR, outMat);
+	cv::triangulatePoints(stereoCalib.Rectify().P1, stereoCalib.Rectify().P2, vecL, vecR, outMat);
 
 	using namespace std;
 	ifstream json_file("./data/depth/ObjectsDistances.json");
@@ -347,7 +558,7 @@ int main() {
 	nlohmann::json namePosition = nlohmann::json::parse(json_string);
 	vector<Vec3> realObjectsPositions;
 	for (auto& el : namePosition) {
-		cout << el.dump() << endl;
+		std::cout << el.dump() << endl;
 		Vec3 v;
 		v.x = el["Position"]["x"].get<float>();
 		v.y = el["Position"]["y"].get<float>();
@@ -357,8 +568,8 @@ int main() {
 
 	vector<Vec3> detectedObjectPositions;
 	for (int j = 0; j < vecL.size(); j++) {
-		cout << "Coord" << endl;
-		cout << "(";
+		std::cout << "Coord" << endl;
+		std::cout << "(";
 		//To Decard system
 		float w = outMat.at<float>(3, j);
 		Vec3 v;
@@ -367,10 +578,10 @@ int main() {
 		v.z = outMat.at<float>(2, j) / w;
 		detectedObjectPositions.push_back(v);
 		for (int i = 0; i < 4; i++) {
-			cout << " " << (outMat.at<float>(i, j) / w)  << " ";
+			std::cout << " " << (outMat.at<float>(i, j) / w)  << " ";
 		}
 
-		cout << ")\n";
+		std::cout << ")\n";
 	}
 	
 	int minObjectsCount = std::min(detectedObjectPositions.size(), realObjectsPositions.size());
@@ -380,16 +591,16 @@ int main() {
 		Vec3& real = realObjectsPositions[i];
 		Vec3 result = real - detected;
 		linarDelta.push_back(result);
-		cout << "vec delta" << endl;
-		cout << "(" << result.x << ", " << result.y << ", " << result.z << ")";
-		cout << endl;
+		std::cout << "vec delta" << endl;
+		std::cout << "(" << result.x << ", " << result.y << ", " << result.z << ")";
+		std::cout << endl;
 	}
 	//[](auto& a, auto& b) { return a < b; }
 	auto minMaxDelta = std::minmax_element(
 		linarDelta.begin(), linarDelta.end(), [](auto& a, auto& b) { return a.length() < b.length(); });
 
-	cout << "Linar error: " << (*minMaxDelta.first - *minMaxDelta.second).length() << endl;
-	waitKey(0);
+	std::cout << "Linar error: " << (*minMaxDelta.first - *minMaxDelta.second).length() << endl;
+	cv::waitKey(0);
 
 	//cout << R1 << endl << R2 << endl << P1 << endl << P2 << endl << Q << endl;
 	return 0;
