@@ -34,6 +34,9 @@
     <Filter Include="Файлы заголовков\Core\Detect">
       <UniqueIdentifier>{757e2680-1c38-4ee8-b857-30a5e015be20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Core\Detect">
+      <UniqueIdentifier>{a7a25dcf-a6aa-41ee-9244-649d704eaee4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,8 +69,17 @@
     <ClCompile Include="StereoRectify.cpp">
       <Filter>Исходные файлы\Core\Calib</Filter>
     </ClCompile>
-    <ClCompile Include="FullStereoСalibration.cpp">
+    <ClCompile Include="FullStereoCalibration.cpp">
       <Filter>Исходные файлы\Core\Calib</Filter>
+    </ClCompile>
+    <ClCompile Include="DnnHumanPoseDetector.cpp">
+      <Filter>Исходные файлы\Core\Detect</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="MotionCapter.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +127,18 @@
     </ClInclude>
     <ClInclude Include="FullStereoCalibration.h">
       <Filter>Файлы заголовков\Core\Calib</Filter>
+    </ClInclude>
+    <ClInclude Include="DnnHumanPoseDetector.h">
+      <Filter>Файлы заголовков\Core\Detect</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionCapter.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Keypoint.h">
+      <Filter>Файлы заголовков\Structs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

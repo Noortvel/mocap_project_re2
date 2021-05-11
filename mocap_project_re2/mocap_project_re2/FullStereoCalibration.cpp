@@ -4,15 +4,14 @@
 #include "StereoRectify.h"
 #include "InitUndistortRectifyMap.h"
 
-openmocap2::FullStereoСalibration::FullStereoСalibration()
-	: 
+openmocap2::FullStereoCalibration::FullStereoCalibration():
 	camera1Calibrate(CAM1_CALIB_CACHE_PATH),
 	cachedStereoCameraCalib(STEREO_CAM_CALIB_CACHE_PATH)
 {
 
 }
 
-void openmocap2::FullStereoСalibration::Calibrate()
+void openmocap2::FullStereoCalibration::Calibrate()
 {
 	auto patternSize = Size2i(6, 9);
 	auto cellSize = 2 * 0.025226f;//
@@ -59,17 +58,17 @@ void openmocap2::FullStereoСalibration::Calibrate()
 		rectify.result.P2);
 }
 
-const openmocap2::InitUndistortRectifyMap::Result& openmocap2::FullStereoСalibration::InitUndistortRectifyMap1() const
+const openmocap2::InitUndistortRectifyMap::Result& openmocap2::FullStereoCalibration::InitUndistortRectifyMap1() const
 {
 	return initUndistortRectifyMap1.result;
 }
 
-const openmocap2::InitUndistortRectifyMap::Result& openmocap2::FullStereoСalibration::InitUndistortRectifyMap2() const
+const openmocap2::InitUndistortRectifyMap::Result& openmocap2::FullStereoCalibration::InitUndistortRectifyMap2() const
 {
 	return initUndistortRectifyMap2.result;
 }
 
-const openmocap2::StereoRectify::Result& openmocap2::FullStereoСalibration::Rectify() const
+const openmocap2::StereoRectify::Result& openmocap2::FullStereoCalibration::Rectify() const
 {
 	return rectify.result;
 }

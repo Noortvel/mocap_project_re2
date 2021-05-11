@@ -79,12 +79,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>G:\Workspace\mmotioncapture\mocap_project_re2\mocap_project_re2\mocap_project_re2\include;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>G:\Workspace\mmotioncapture\raylib-3.7.0_win64_msvc16\lib;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>G:\Workspace\mmotioncapture\mocap_project_re2\mocap_project_re2\mocap_project_re2\include;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>G:\Workspace\mmotioncapture\raylib-3.7.0_win64_msvc16\lib;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,11 +120,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world450d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world450d.lib;raylibdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,15 +142,18 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world450.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world450.lib;raylib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="CachedCameraCalibrate.cpp" />
     <ClCompile Include="CachedStereoCameraCalibrate.cpp" />
-    <ClCompile Include="FullStereoСalibration.cpp" />
+    <ClCompile Include="DnnHumanPoseDetector.cpp" />
+    <ClCompile Include="FullStereoCalibration.cpp" />
     <ClCompile Include="CameraCalibrate.cpp" />
     <ClCompile Include="InitUndistortRectifyMap.cpp" />
+    <ClCompile Include="MotionCapter.cpp" />
     <ClCompile Include="SceneSettings.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainProcessor.cpp" />
@@ -158,14 +162,18 @@
     <ClCompile Include="StereoRectify.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
     <ClInclude Include="CachedCameraCalibrate.h" />
     <ClInclude Include="CachedStereoCameraCalibrate.h" />
+    <ClInclude Include="DnnHumanPoseDetector.h" />
     <ClInclude Include="FullStereoCalibration.h" />
     <ClInclude Include="CameraCalibrate.h" />
     <ClInclude Include="IFileCached.h" />
     <ClInclude Include="InitUndistortRectifyMap.h" />
     <ClInclude Include="ITask.h" />
     <ClInclude Include="JsonHelper.h" />
+    <ClInclude Include="Keypoint.h" />
+    <ClInclude Include="MotionCapter.h" />
     <ClInclude Include="NamePosition.h" />
     <ClInclude Include="SceneSettings.h" />
     <ClInclude Include="MainProcessor.h" />

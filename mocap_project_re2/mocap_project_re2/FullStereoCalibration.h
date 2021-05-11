@@ -1,5 +1,4 @@
 #pragma once
-#include <opencv2/opencv.hpp>
 #include <string>
 #include "CachedCameraCalibrate.h"
 #include "CachedStereoCameraCalibrate.h";
@@ -8,12 +7,11 @@
 
 namespace openmocap2 
 {
-	using namespace cv;
 	using namespace std;
 
-	struct FullStereoСalibration
+	struct FullStereoCalibration
 	{
-		FullStereoСalibration();
+		FullStereoCalibration();
 		void Calibrate();
 		const InitUndistortRectifyMap::Result& InitUndistortRectifyMap1() const;
 		const InitUndistortRectifyMap::Result& InitUndistortRectifyMap2() const;
@@ -27,6 +25,5 @@ namespace openmocap2
 		StereoRectify rectify;
 		InitUndistortRectifyMap initUndistortRectifyMap1;
 		InitUndistortRectifyMap initUndistortRectifyMap2;
-
 	};
 }

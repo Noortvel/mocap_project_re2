@@ -11,23 +11,26 @@
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 
-#include "JsonHelper.h"
-#include "NamePosition.h"
+//#include "JsonHelper.h"
+//#include "NamePosition.h"
+//
+//#include "SceneSettings.h"
+//
+//#include "MainProcessor.h"
+//
+//#include "FullStereoCalibration.h"
+//#include "CameraCalibrate.h"
+//#include "StereoCameraCalibrate.h"
+//#include "CachedCameraCalibrate.h"
+//#include "CachedStereoCameraCalibrate.h"
+//#include "StereoRectify.h"
+//#include "InitUndistortRectifyMap.h"
+//#include "DnnHumanPoseDetector.h"
 
-#include "SceneSettings.h"
-
-#include "MainProcessor.h"
-
-#include "FullStereoCalibration.h"
-#include "CameraCalibrate.h"
-#include "StereoCameraCalibrate.h"
-#include "CachedCameraCalibrate.h"
-#include "CachedStereoCameraCalibrate.h"
-#include "StereoRectify.h"
-#include "InitUndistortRectifyMap.h"
-#include <limits>
-#include <algorithm>
-#include <map>
+//#include <limits>
+//#include <algorithm>
+//#include <map>
+#include "Application.h"
 
 using namespace cv;
 using namespace cv::Error;
@@ -282,29 +285,6 @@ void VideoBlobs() {
 }
 
 
-string CocoKeyPointToString(int keypoint) {
-	static map<int, string> keypoins = {
-		{0, "nose"},
-		{1, "left_eye"},
-		{2, "right_eye"},
-		{3  ,"left_ear"},
-		{4  ,"right_ear"},
-		{5  ,"left_shoulder"},
-		{6  ,"right_shoulder"},
-		{7  ,"left_elbow"},
-		{8  ,"right_elbow"},
-		{9  ,"left_wrist"},
-		{10 , "right_wrist"},
-		{11 , "left_hip"},
-		{12 , "right_hip"},
-		{13 , "left_knee"},
-		{14 , "right_knee"},
-		{15 , "left_ankle"},
-		{16 , "right_ankle"}
-	};
-	return keypoins[keypoint];
-}
-
 int main() {
 	//MainProcessor mainProceccor;
 	//VideoBlobs();
@@ -312,301 +292,136 @@ int main() {
 	//2.jpg
 	//i3.png
 	//m1.png
-	auto testImg = cv::imread("./data/dnn_test/m1.png", cv::IMREAD_COLOR);
-	Mat sourceImageTransformed;
+	//syntatic1.png
+	openmocap2::Application app;
+	app.Start();
 
-	cv::resize(testImg, sourceImageTransformed, Size(192, 256));
-	cv::cvtColor(sourceImageTransformed, sourceImageTransformed, COLOR_BGR2RGB);
-
-
-	//cv::normalize(testImg2Fitted, testImg2Fitted, 0, 1, cv::NORM_MINMAX);
-
-	auto inputMean = cv::mean(sourceImageTransformed);
-	cout << inputMean << endl;
-
-	auto testImg2FittedType = sourceImageTransformed.type();
-	auto srctypeStr = cv::typeToString(testImg2FittedType);
-
-	Mat testImgNormalized;
-	sourceImageTransformed.convertTo(testImgNormalized, CV_32FC3); //(double)1 / (double)255
-	cout << "testImgNormalizedMean " << cv::mean(testImgNormalized) << endl;
-
-	cv::normalize(testImgNormalized, testImgNormalized, 1, 0, cv::NORM_MINMAX);
-
-	//[0.485, 0.456, 0.406]
-	auto targetMean = Scalar(0.485, 0.456, 0.406);
-	auto imgMean = cv::mean(testImgNormalized);
-	auto meanToAdd = targetMean - imgMean;
-
-
-	Mat tMean = Mat({ 0.485, 0.456, 0.406 });
-	Mat tStd = Mat({ 0.229, 0.224, 0.225 });
-
-	Mat meanNrm, stdNrm;
-	cv::meanStdDev(testImgNormalized, meanNrm, stdNrm);
-	
-	Mat meanAdd, stdAdd;
-
-	cv::subtract(tMean, meanNrm, meanAdd);
-	cv::subtract(tStd, stdNrm, meanAdd);
-
-	auto _sa = cv::typeToString(meanNrm.type());
-	double val = meanNrm.at<double>(0);
-
-	//meanNrm.convertTo()
-	cout << "mean " << meanNrm << endl << "std " << stdNrm << endl;
-
-	
-	for (int i = 0; i < testImgNormalized.cols; i++) {
-		for (int j = 0; j < testImgNormalized.rows; j++) {
-			auto& intensity = testImgNormalized.at<Vec3f>(j, i);
-			for (int k = 0; k < testImgNormalized.channels(); k++) {
-				intensity.val[k] -= meanNrm.at<double>(k);
-				intensity.val[k] /= stdNrm.at<double>(k);
-				intensity.val[k] *= tStd.at<double>(k);
-				intensity.val[k] += tMean.at<double>(k);
-			}
-		}
-	}
-
-	cv::meanStdDev(testImgNormalized, meanNrm, stdNrm);
-	cout << "mean " << meanNrm << endl << "std " << stdNrm << endl;
-
-	sourceImageTransformed = testImgNormalized;
-
-
-
-	//cv::meanStdDev(testImgNormalized, meanNrm, stdNrm);
-
-	/*auto testBlob = cv::dnn::blobFromImage(testImg2Fitted);
-	auto testBlobMean = cv::mean(testBlob);
-	cout << testBlobMean << endl;*/
-	
-	//./dnn_models/mmpose_hrnet_w32_coco_topdown_256x192.onnx -- broken
-	//./dnn_models/pose_hrnet_w32_256x192.onnx -- worked
-	//./dnn_models/mmpose_hrnet_w32_coco_256x192_handzoo.onnx -- worked
-
-	auto uniposeDnn = cv::dnn::readNetFromONNX("./dnn_models/pose_hrnet_w32_256x192.onnx");
-
-	std::cout << "in img size: " << sourceImageTransformed.size << endl;
-	//1 3 256 192
-	auto blob = cv::dnn::blobFromImage(sourceImageTransformed);
-	std::cout << "in blob size: " << blob.size << endl;
-	uniposeDnn.setInput(blob);
-	auto outBlob = uniposeDnn.forward();
-	std::cout << "out blob size: " << outBlob.size << endl;
-
-	vector<Mat> heatmaps;
-	float minVal = numeric_limits<float>::min();
-	float maxVal = numeric_limits<float>::max();
-
-	Mat showMixed;
-	int fitWidth = 192 * 3;
-	int fitHeight = 256 * 3;
-	Mat heatMapsmShow = Mat(Size(fitWidth, fitHeight), CV_32F);
-	cv::resize(testImg, showMixed, Size(fitWidth, fitHeight));
-
-	size_t keyPoints = 17;
-	for (size_t layer = 0; layer < keyPoints; layer++) {
-		heatmaps.push_back(Mat(Size(48, 64), outBlob.type()));
-		Mat& hm = heatmaps.back();
-		for (int y = 0; y < 64; y++) {
-			for (int x = 0; x < 48; x++) {
-				float& val = hm.at<float>(y, x);
-				float& srcVal = outBlob.at<float>(Vec<int, 4>(0, layer, y, x));
-				val = srcVal;
-				minVal = std::min(val, minVal);
-				maxVal = std::max(val, maxVal);
-			}
-		}
-
-		
-		Mat hmImageShow;
-		cv::resize(hm, hmImageShow, Size(fitWidth, fitHeight));
-
-		cv::normalize(hmImageShow, hmImageShow, 0, 1, cv::NORM_MINMAX);
-		cv::threshold(hmImageShow, hmImageShow, 0.5, 1, cv::THRESH_TOZERO);
-		
-		
-		Mat hmColorizedShow;
-		hmImageShow.convertTo(hmColorizedShow, CV_8UC3, 255);
-		cv::cvtColor(hmColorizedShow, hmColorizedShow, COLOR_GRAY2RGB);
-		//cv::applyColorMap(hmColorizedShow, hmColorizedShow, COLORMAP_JET);
-
-		cv::addWeighted(heatMapsmShow, 1, hmImageShow, 1, 0, heatMapsmShow);
-		//cv::addWeighted(showMixed, 0.5, hmColorizedShow, 1, 0, showMixed);
-		
-		//cv::putText(showMixed, "layer: " + std::to_string(layer) + CocoKeyPointToString(layer), cv::Point(50, 50), cv::FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 0));
-
-		//cv::imwrite("layer_" + std::to_string(layer) + ".png", showMixed);
-		std::cout << layer << endl;
-		//std::cout << "dtLen: " << dtLen << endl;
-	}
-
-	cv::normalize(heatMapsmShow, heatMapsmShow, 0, 1, cv::NORM_MINMAX);
-	heatMapsmShow.convertTo(heatMapsmShow, CV_8UC3, 255);
-	cv::cvtColor(heatMapsmShow, heatMapsmShow, COLOR_GRAY2RGB);
-	cv::applyColorMap(heatMapsmShow, heatMapsmShow, COLORMAP_JET);
-
-	cv::applyColorMap(heatMapsmShow, heatMapsmShow, COLORMAP_JET);
-	cv::addWeighted(showMixed, 0.5, heatMapsmShow, 1, 0, showMixed);
-
-	cv::imshow("MM", heatMapsmShow);
-	cv::waitKey();
-
-	
-
-	/*cv::FileStorage fs("./ttt2.json", cv::FileStorage::WRITE);
-	fs << "matrix" << mm;
-	fs.release();
-
-	cout << mm;
-	*/
-
-	
-	//auto mh = outBlob.at<Mat>(cv::Vec<int, 2>(1, 1));
-
-
-	//auto outBlobSize = outBlob.size;
-	//std::cout << outBlobSize << endl;
-
-	vector<Mat> outImgs;
-	cv::dnn::imagesFromBlob(outBlob, outImgs);
-
-	auto outImageSize = outImgs[0].size;
-	std::cout << outImageSize << endl;
-
-	//cout << outImgs[0] << endl;
-
-	/*
-	cv::FileStorage fs("./ttt2.json", cv::FileStorage::WRITE);
-	fs << "matrix" << outBlob;
-	fs.release();
-	*/
-
-	//imshow("Main", outImgs[0]);
-
-	cv::waitKey();
 	return 0;
 
-	spdlog::set_level(spdlog::level::debug);
-	FullStereoСalibration stereoCalib;
-	stereoCalib.Calibrate();
+	//auto testImg = cv::imread("./data/dnn_test/syntatic1.png", cv::IMREAD_COLOR);
+	//DnnHumanPoseDetector dnnDetector;
+	//dnnDetector.Forward(testImg);
+
+	//return 0;
+	//
+
+	//spdlog::set_level(spdlog::level::debug);
+	//FullStereoСalibration stereoCalib;
+	//stereoCalib.Calibrate();
 
 
 
+	////DEPTH TESTER
+	//Mat depthL = imread("./data/depth/CameraL-Depth-.png");
+	//Mat depthR = imread("./data/depth/CameraR-Depth-.png");
 
-	//DEPTH TESTER
-	Mat depthL = imread("./data/depth/CameraL-Depth-.png");
-	Mat depthR = imread("./data/depth/CameraR-Depth-.png");
+	//Mat depth1Rmpd, depth2Rmpd;
 
-	Mat depth1Rmpd, depth2Rmpd;
+	//cv::remap(depthL, depth1Rmpd,
+	//	stereoCalib.InitUndistortRectifyMap1().map1, stereoCalib.InitUndistortRectifyMap1().map2, INTER_LINEAR);
+	//cv::remap(depthR, depth2Rmpd,
+	//	stereoCalib.InitUndistortRectifyMap2().map1, stereoCalib.InitUndistortRectifyMap2().map2, INTER_LINEAR);
 
-	cv::remap(depthL, depth1Rmpd,
-		stereoCalib.InitUndistortRectifyMap1().map1, stereoCalib.InitUndistortRectifyMap1().map2, INTER_LINEAR);
-	cv::remap(depthR, depth2Rmpd,
-		stereoCalib.InitUndistortRectifyMap2().map1, stereoCalib.InitUndistortRectifyMap2().map2, INTER_LINEAR);
+	//depth1Rmpd = depthL;
+	//depth2Rmpd = depthR;
 
-	depth1Rmpd = depthL;
-	depth2Rmpd = depthR;
+	//cv::SimpleBlobDetector::Params params;
+	//params.minDistBetweenBlobs = 0;
+	//params.filterByInertia = false;
+	//params.filterByConvexity = false;
+	//params.filterByColor = false;
+	//params.filterByCircularity = false;
+	//params.filterByArea = false;
+	//vector<KeyPoint> keypointsL;
+	//vector<KeyPoint> keypointsR;
+	//Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+	//Mat depthLGray, depthRGray;
+	//cv::cvtColor(depth1Rmpd, depthLGray, cv::COLOR_BGR2GRAY);
+	//cv::cvtColor(depth2Rmpd, depthRGray, cv::COLOR_BGR2GRAY);
 
-	cv::SimpleBlobDetector::Params params;
-	params.minDistBetweenBlobs = 0;
-	params.filterByInertia = false;
-	params.filterByConvexity = false;
-	params.filterByColor = false;
-	params.filterByCircularity = false;
-	params.filterByArea = false;
-	vector<KeyPoint> keypointsL;
-	vector<KeyPoint> keypointsR;
-	Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
-	Mat depthLGray, depthRGray;
-	cv::cvtColor(depth1Rmpd, depthLGray, cv::COLOR_BGR2GRAY);
-	cv::cvtColor(depth2Rmpd, depthRGray, cv::COLOR_BGR2GRAY);
+	//double thresh = 90;//90//150
+	//double maxValue = 255;
+	//cv::threshold(depthLGray, depthLGray, thresh, maxValue, THRESH_BINARY);
+	//cv::threshold(depthRGray, depthRGray, thresh, maxValue, THRESH_BINARY);
 
-	double thresh = 90;//90//150
-	double maxValue = 255;
-	cv::threshold(depthLGray, depthLGray, thresh, maxValue, THRESH_BINARY);
-	cv::threshold(depthRGray, depthRGray, thresh, maxValue, THRESH_BINARY);
+	//detector->detect(depthLGray, keypointsL);
+	//detector->detect(depthRGray, keypointsR);
 
-	detector->detect(depthLGray, keypointsL);
-	detector->detect(depthRGray, keypointsR);
+	////drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	////cv::imshow("Main", depthLGray);
 
-	//drawKeypoints(depthLGray, keypointsL, depthLGray, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-	//cv::imshow("Main", depthLGray);
+	//std::vector<Mat> outArray(keypointsL.size());
+	//for (auto iter : outArray)
+	//{
+	//	iter.create(4, 1, CV_64F);
+	//}
+	//vector<Point2f> vecL;
+	//vector<Point2f> vecR;
+	//for (auto& iter : keypointsL) vecL.push_back(iter.pt);
+	//for (auto& iter : keypointsR) vecR.push_back(iter.pt);
+	//auto comp = [](Point2f& a, Point2f& b) { return a.y > b.y; };
+	//std::sort(vecL.begin(), vecL.end(), comp);
+	//std::sort(vecR.begin(), vecR.end(), comp);
 
-	std::vector<Mat> outArray(keypointsL.size());
-	for (auto iter : outArray)
-	{
-		iter.create(4, 1, CV_64F);
-	}
-	vector<Point2f> vecL;
-	vector<Point2f> vecR;
-	for (auto& iter : keypointsL) vecL.push_back(iter.pt);
-	for (auto& iter : keypointsR) vecR.push_back(iter.pt);
-	auto comp = [](Point2f& a, Point2f& b) { return a.y > b.y; };
-	std::sort(vecL.begin(), vecL.end(), comp);
-	std::sort(vecR.begin(), vecR.end(), comp);
+	//Mat outMat(1, keypointsL.size(), CV_64F);
+	//cv::triangulatePoints(stereoCalib.Rectify().P1, stereoCalib.Rectify().P2, vecL, vecR, outMat);
 
-	Mat outMat(1, keypointsL.size(), CV_64F);
-	cv::triangulatePoints(stereoCalib.Rectify().P1, stereoCalib.Rectify().P2, vecL, vecR, outMat);
+	//using namespace std;
+	//ifstream json_file("./data/depth/ObjectsDistances.json");
+	//string json_string((istreambuf_iterator<char>(json_file)), istreambuf_iterator<char>());
+	//json_file.close();
+	//nlohmann::json namePosition = nlohmann::json::parse(json_string);
+	//vector<Vec3> realObjectsPositions;
+	//for (auto& el : namePosition) {
+	//	std::cout << el.dump() << endl;
+	//	Vec3 v;
+	//	v.x = el["Position"]["x"].get<float>();
+	//	v.y = el["Position"]["y"].get<float>();
+	//	v.z = el["Position"]["z"].get<float>();
+	//	realObjectsPositions.push_back(v);
+	//}
 
-	using namespace std;
-	ifstream json_file("./data/depth/ObjectsDistances.json");
-	string json_string((istreambuf_iterator<char>(json_file)), istreambuf_iterator<char>());
-	json_file.close();
-	nlohmann::json namePosition = nlohmann::json::parse(json_string);
-	vector<Vec3> realObjectsPositions;
-	for (auto& el : namePosition) {
-		std::cout << el.dump() << endl;
-		Vec3 v;
-		v.x = el["Position"]["x"].get<float>();
-		v.y = el["Position"]["y"].get<float>();
-		v.z = el["Position"]["z"].get<float>();
-		realObjectsPositions.push_back(v);
-	}
+	//vector<Vec3> detectedObjectPositions;
+	//for (int j = 0; j < vecL.size(); j++) {
+	//	std::cout << "Coord" << endl;
+	//	std::cout << "(";
+	//	//To Decard system
+	//	float w = outMat.at<float>(3, j);
+	//	Vec3 v;
+	//	v.x = outMat.at<float>(0, j) / w;
+	//	v.y = -outMat.at<float>(1, j) / w; // Coord y is reversed in image coord system
+	//	v.z = outMat.at<float>(2, j) / w;
+	//	detectedObjectPositions.push_back(v);
+	//	for (int i = 0; i < 4; i++) {
+	//		std::cout << " " << (outMat.at<float>(i, j) / w)  << " ";
+	//	}
 
-	vector<Vec3> detectedObjectPositions;
-	for (int j = 0; j < vecL.size(); j++) {
-		std::cout << "Coord" << endl;
-		std::cout << "(";
-		//To Decard system
-		float w = outMat.at<float>(3, j);
-		Vec3 v;
-		v.x = outMat.at<float>(0, j) / w;
-		v.y = -outMat.at<float>(1, j) / w; // Coord y is reversed in image coord system
-		v.z = outMat.at<float>(2, j) / w;
-		detectedObjectPositions.push_back(v);
-		for (int i = 0; i < 4; i++) {
-			std::cout << " " << (outMat.at<float>(i, j) / w)  << " ";
-		}
+	//	std::cout << ")\n";
+	//}
+	//
+	//int minObjectsCount = std::min(detectedObjectPositions.size(), realObjectsPositions.size());
+	//vector<Vec3> linarDelta;
+	//for (size_t i = 0; i < minObjectsCount; i++) {
+	//	Vec3& detected = detectedObjectPositions[i];
+	//	Vec3& real = realObjectsPositions[i];
+	//	Vec3 result = real - detected;
+	//	linarDelta.push_back(result);
+	//	std::cout << "vec delta" << endl;
+	//	std::cout << "(" << result.x << ", " << result.y << ", " << result.z << ")";
+	//	std::cout << endl;
+	//}
+	////[](auto& a, auto& b) { return a < b; }
+	//auto minMaxDelta = std::minmax_element(
+	//	linarDelta.begin(), linarDelta.end(), [](auto& a, auto& b) { return a.length() < b.length(); });
 
-		std::cout << ")\n";
-	}
-	
-	int minObjectsCount = std::min(detectedObjectPositions.size(), realObjectsPositions.size());
-	vector<Vec3> linarDelta;
-	for (size_t i = 0; i < minObjectsCount; i++) {
-		Vec3& detected = detectedObjectPositions[i];
-		Vec3& real = realObjectsPositions[i];
-		Vec3 result = real - detected;
-		linarDelta.push_back(result);
-		std::cout << "vec delta" << endl;
-		std::cout << "(" << result.x << ", " << result.y << ", " << result.z << ")";
-		std::cout << endl;
-	}
-	//[](auto& a, auto& b) { return a < b; }
-	auto minMaxDelta = std::minmax_element(
-		linarDelta.begin(), linarDelta.end(), [](auto& a, auto& b) { return a.length() < b.length(); });
+	//std::cout << "Linar error: " << (*minMaxDelta.first - *minMaxDelta.second).length() << endl;
+	//cv::waitKey(0);
 
-	std::cout << "Linar error: " << (*minMaxDelta.first - *minMaxDelta.second).length() << endl;
-	cv::waitKey(0);
-
-	//cout << R1 << endl << R2 << endl << P1 << endl << P2 << endl << Q << endl;
-	return 0;
-	//OLD
-	//FindDistancions((float)cameraMatrix.at<double>(0, 0));
-	//auto focalLen = result.cameraMatrix.at<float>(0, 0);
-	//cout << "Focal Len=" << focalLen << endl;
-	//http://www.vicon.com/hardware/cameras/vero/
+	////cout << R1 << endl << R2 << endl << P1 << endl << P2 << endl << Q << endl;
+	//return 0;
+	////OLD
+	////FindDistancions((float)cameraMatrix.at<double>(0, 0));
+	////auto focalLen = result.cameraMatrix.at<float>(0, 0);
+	////cout << "Focal Len=" << focalLen << endl;
+	////http://www.vicon.com/hardware/cameras/vero/
 }
