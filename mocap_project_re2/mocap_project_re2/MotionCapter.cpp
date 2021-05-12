@@ -3,13 +3,15 @@
 #include <vector>
 #include "FullStereoCalibration.h"
 #include "DnnHumanPoseDetector.h"
+#include "DnnHumanBoxDetector.h"
 
 
 using namespace std;
 
 void openmocap2::MotionCapter::Start(vector<vector<Keypoint>>& animation)
 {
-	
+	DnnHumanBoxDetector boxDetector;
+
 	DnnHumanPoseDetector dnnDetector;
 	const size_t keypointsCount = dnnDetector.KEYPOINTS_COUNT;
 	openmocap2::FullStereoCalibration stereoCalib;
@@ -34,6 +36,8 @@ void openmocap2::MotionCapter::Start(vector<vector<Keypoint>>& animation)
 			std::cout << "Found the end of the video" << endl;
 			break;
 		}
+
+		boxDetector.Forward(frameL);
 
 		keyPointsL = dnnDetector.Forward(frameL);
 		keyPointsR = dnnDetector.Forward(frameR);

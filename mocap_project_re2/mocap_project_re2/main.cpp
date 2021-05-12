@@ -284,6 +284,7 @@ void VideoBlobs() {
 	cv::waitKey(0);
 }
 
+#include "DnnHumanBoxDetector.h"
 
 int main() {
 	//MainProcessor mainProceccor;
@@ -293,8 +294,13 @@ int main() {
 	//i3.png
 	//m1.png
 	//syntatic1.png
-	openmocap2::Application app;
-	app.Start();
+
+	Mat img = imread("./data/dnn_test/1.jpg");
+	openmocap2::DnnHumanBoxDetector boxDetector;
+	boxDetector.Forward(img);
+
+	/*openmocap2::Application app;
+	app.Start();*/
 
 	return 0;
 
