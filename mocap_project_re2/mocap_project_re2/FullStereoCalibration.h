@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "CachedCameraCalibrate.h"
-#include "CachedStereoCameraCalibrate.h";
+#include "CachedStereoCameraCalibrate.h"
 #include "StereoRectify.h"
 #include "InitUndistortRectifyMap.h"
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "ITask.h"
 #include "IFileCached.h"
 #include "CameraCalibrate.h"
 

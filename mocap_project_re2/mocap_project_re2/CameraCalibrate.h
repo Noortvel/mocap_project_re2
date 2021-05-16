@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>
-#include "IFileCached.h"
 
 namespace openmocap2 {
 	using namespace cv;

@@ -1,5 +1,4 @@
 #pragma once
-#include "ITask.h"
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <string>
@@ -35,6 +34,5 @@ namespace openmocap2 {
 			const vector<Point3f>& chessboard3dPoints,
 			vector<vector<Point2f>>& outPlanar,
 			int& outObjectsCount);
-
 	};
 }

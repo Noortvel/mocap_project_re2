@@ -81,11 +81,14 @@
     <ClCompile Include="MotionCapter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="DnnHumanBoxDetector.cpp">
-      <Filter>Исходные файлы\Core\Detect</Filter>
-    </ClCompile>
     <ClCompile Include="HeatmapsUtills.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="DnnPoseDetectorCUDA.cpp">
+      <Filter>Исходные файлы\Core\Detect</Filter>
+    </ClCompile>
+    <ClCompile Include="DnnBoxDetectorCUDA.cpp">
+      <Filter>Исходные файлы\Core\Detect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,11 +149,14 @@
     <ClInclude Include="Keypoint.h">
       <Filter>Файлы заголовков\Structs</Filter>
     </ClInclude>
-    <ClInclude Include="DnnHumanBoxDetector.h">
-      <Filter>Файлы заголовков\Core\Detect</Filter>
-    </ClInclude>
     <ClInclude Include="HeatmapsUtills.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DnnPoseDetectorCUDA.h">
+      <Filter>Файлы заголовков\Core\Detect</Filter>
+    </ClInclude>
+    <ClInclude Include="DnnBoxDetectorCUDA.h">
+      <Filter>Файлы заголовков\Core\Detect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

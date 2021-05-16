@@ -78,13 +78,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>G:\Workspace\mmotioncapture\mocap_project_re2\mocap_project_re2\mocap_project_re2\include;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Workspace\mmotioncapture\raylib-3.7.0_win64_msvc16\lib;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>G:\Workspace\mmotioncapture\openmocap2\Microsoft.ML.Onnxruntime.GPU.1.7.1\build\native\include;G:\Workspace\mmotioncapture\mocap_project_re2\mocap_project_re2\mocap_project_re2\include;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>G:\Workspace\mmotioncapture\openmocap2\Microsoft.ML.Onnxruntime.GPU.1.7.1\runtimes\win-x64\native;G:\Workspace\mmotioncapture\raylib-3.7.0_win64_msvc16\lib;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>G:\Workspace\mmotioncapture\GPU\cuda\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>G:\Workspace\mmotioncapture\mocap_project_re2\mocap_project_re2\mocap_project_re2\include;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Workspace\mmotioncapture\raylib-3.7.0_win64_msvc16\lib;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>G:\Workspace\mmotioncapture\openmocap2\Microsoft.ML.Onnxruntime.GPU.1.7.1\build\native\include;G:\Workspace\mmotioncapture\mocap_project_re2\mocap_project_re2\mocap_project_re2\include;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>G:\Workspace\mmotioncapture\openmocap2\Microsoft.ML.Onnxruntime.GPU.1.7.1\runtimes\win-x64\native;G:\Workspace\mmotioncapture\raylib-3.7.0_win64_msvc16\lib;G:\Workspace\mmotioncapture\mocap_project_re2\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>G:\Workspace\mmotioncapture\GPU\cuda\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,7 +127,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world452d.lib;raylibdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world452d.lib;raylibdll.lib;onnxruntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,15 +144,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world452.lib;raylib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world452.lib;raylibdll.lib;onnxruntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="CachedCameraCalibrate.cpp" />
     <ClCompile Include="CachedStereoCameraCalibrate.cpp" />
-    <ClCompile Include="DnnHumanBoxDetector.cpp" />
+    <ClCompile Include="DnnBoxDetectorCUDA.cpp" />
     <ClCompile Include="DnnHumanPoseDetector.cpp" />
+    <ClCompile Include="DnnPoseDetectorCUDA.cpp" />
     <ClCompile Include="FullStereoCalibration.cpp" />
     <ClCompile Include="CameraCalibrate.cpp" />
     <ClCompile Include="HeatmapsUtills.cpp" />
@@ -167,8 +170,9 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="CachedCameraCalibrate.h" />
     <ClInclude Include="CachedStereoCameraCalibrate.h" />
-    <ClInclude Include="DnnHumanBoxDetector.h" />
+    <ClInclude Include="DnnBoxDetectorCUDA.h" />
     <ClInclude Include="DnnHumanPoseDetector.h" />
+    <ClInclude Include="DnnPoseDetectorCUDA.h" />
     <ClInclude Include="FullStereoCalibration.h" />
     <ClInclude Include="CameraCalibrate.h" />
     <ClInclude Include="HeatmapsUtills.h" />
